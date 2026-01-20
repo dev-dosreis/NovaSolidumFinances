@@ -37,12 +37,10 @@ export function formatCep(value: string) {
 }
 
 export function formatPhone(value: string) {
-  const digits = stripNonDigits(value);
+  const hasPlus = value.trim().startsWith('+');
+  const digits = stripNonDigits(value).slice(0, 15);
   if (!digits) return '';
-  if (!digits.startsWith('55')) {
-    return `+55${digits}`.slice(0, 14);
-  }
-  return `+${digits}`.slice(0, 14);
+  return hasPlus ? `+${digits}` : digits;
 }
 
 export function isValidCpf(value?: string) {
@@ -82,7 +80,10 @@ export function isValidCnpj(value?: string) {
 }
 
 export function isValidPhone(value?: string) {
-  return /^\+55\d{10,11}$/.test(value || '');
+  const raw = (value || '').trim();
+  const digits = stripNonDigits(raw);
+  if (!digits) return false;
+  return digits.length >= 8 && digits.length <= 15;
 }
 
 export function isValidCep(value?: string) {

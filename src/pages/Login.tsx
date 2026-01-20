@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { GoogleAuthProvider, getRedirectResult, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  GoogleAuthProvider,
-  getRedirectResult,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut,
-} from 'firebase/auth';
 
 import { BrandLogo } from '../components/shared/BrandLogo';
 import { Button } from '../components/ui/button';
@@ -22,29 +15,23 @@ import { auth, isFirebaseConfigured } from '../lib/firebase';
 import { cn } from '../lib/utils';
 
 const loginSchema = z.object({
-  email: z.string().email('Informe um email válido.'),
-  password: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.'),
+  email: z.string().min(1, 'Informe o email.').email('Email inválido.'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres.'),
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
-
-type SubmitStatus = 'idle' | 'loading';
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function Login() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState<SubmitStatus>('idle');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<LoginForm>({
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
   useEffect(() => {
@@ -52,11 +39,7 @@ export function Login() {
     getRedirectResult(auth)
       .then((result) => {
         if (result?.user) {
-          if (!hasAdminAllowlist) {
-            setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
-            return signOut(auth);
-          }
-          if (!isAdminEmail(result.user.email)) {
+          if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
             setSubmitError('Seu email não está autorizado para o painel.');
             return signOut(auth);
           }
@@ -71,10 +54,6 @@ export function Login() {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
-    if (!hasAdminAllowlist) {
-      setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
-      return;
-    }
 
     setIsGoogleLoading(true);
     setSubmitError(null);
@@ -82,7 +61,7 @@ export function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      if (!isAdminEmail(result.user.email)) {
+      if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
         setSubmitError('Seu email não está autorizado para o painel.');
         await signOut(auth);
         return;
@@ -101,29 +80,32 @@ export function Login() {
     }
   };
 
-  const onSubmit = async (values: LoginForm) => {
+  const handleEmailLogin = async (values: LoginFormValues) => {
     if (!isFirebaseConfigured || !auth) {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
-    if (!hasAdminAllowlist) {
-      setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
-      return;
-    }
-    setStatus('loading');
+
     setSubmitError(null);
     try {
       const result = await signInWithEmailAndPassword(auth, values.email, values.password);
-      if (!isAdminEmail(result.user.email)) {
+      if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
         setSubmitError('Seu email não está autorizado para o painel.');
         await signOut(auth);
         return;
       }
       navigate('/admin');
     } catch (error) {
-      setSubmitError('Credenciais inválidas ou acesso não autorizado.');
-    } finally {
-      setStatus('idle');
+      const code = (error as { code?: string } | null)?.code ?? '';
+      if (['auth/invalid-email', 'auth/user-not-found', 'auth/wrong-password'].includes(code)) {
+        setSubmitError('Email ou senha inválidos.');
+      } else if (code === 'auth/too-many-requests') {
+        setSubmitError('Muitas tentativas. Tente novamente mais tarde.');
+      } else if (code === 'auth/user-disabled') {
+        setSubmitError('Usuário desativado. Contate o suporte.');
+      } else {
+        setSubmitError('Não foi possível entrar com email e senha.');
+      }
     }
   };
 
@@ -150,7 +132,7 @@ export function Login() {
             <div className="space-y-2">
               <h1 className="text-2xl font-semibold text-foreground">Acesso Administrativo</h1>
               <p className="text-sm text-muted-foreground">
-                Entre com suas credenciais para acompanhar os registros do onboarding.
+                Entre com Google ou email e senha para acompanhar os registros do onboarding.
               </p>
             </div>
 
@@ -166,53 +148,54 @@ export function Login() {
                 variant="outline"
                 className="w-full"
                 onClick={handleGoogleLogin}
-                disabled={status === 'loading' || isGoogleLoading}
+                disabled={isGoogleLoading}
               >
                 <span className="mr-2 flex h-6 w-6 items-center justify-center rounded-full border border-border/60 text-xs font-semibold">
                   G
                 </span>
                 {isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}
               </Button>
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <span className="h-px flex-1 bg-border/60" />
-                ou
-                <span className="h-px flex-1 bg-border/60" />
+            </div>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border/60" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-2 text-muted-foreground">ou</span>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+            <form onSubmit={handleSubmit(handleEmailLogin)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@novasolidum.com.br"
                   autoComplete="email"
+                  placeholder="email@empresa.com"
+                  aria-invalid={Boolean(errors.email)}
+                  className={cn(errors.email && 'border-rose-400 focus-visible:ring-rose-200')}
                   {...register('email')}
                 />
                 {errors.email ? <p className="text-xs text-rose-600">{errors.email.message}</p> : null}
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
                   autoComplete="current-password"
+                  placeholder="Digite sua senha"
+                  aria-invalid={Boolean(errors.password)}
+                  className={cn(errors.password && 'border-rose-400 focus-visible:ring-rose-200')}
                   {...register('password')}
                 />
                 {errors.password ? <p className="text-xs text-rose-600">{errors.password.message}</p> : null}
               </div>
-
               {submitError ? <p className="text-xs text-rose-600">{submitError}</p> : null}
-
-              <Button
-                type="submit"
-                className={cn('w-full', status === 'loading' && 'pointer-events-none opacity-80')}
-                disabled={status === 'loading' || isGoogleLoading}
-              >
-                {status === 'loading' ? 'Entrando...' : 'Entrar'}
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Entrando...' : 'Entrar com email'}
               </Button>
             </form>
 

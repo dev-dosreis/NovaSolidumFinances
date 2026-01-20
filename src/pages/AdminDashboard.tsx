@@ -187,28 +187,7 @@ export function AdminDashboard() {
     );
   }
 
-  if (!hasAdminAllowlist) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6">
-          <Card className="border-border/70 p-8">
-            <h1 className="text-2xl font-semibold">Painel administrativo</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Defina a variável <span className="font-semibold">VITE_ADMIN_EMAILS</span> para restringir o acesso ao
-              painel.
-            </p>
-            <div className="mt-6">
-              <Button variant="outline" onClick={handleSignOut} disabled={isSigningOut}>
-                {isSigningOut ? 'Saindo...' : 'Sair'}
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdminEmail(user.email)) {
+  if (hasAdminAllowlist && !isAdminEmail(user.email)) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6">

@@ -182,7 +182,7 @@ export const copy = {
     foreigner: 'Sou estrangeiro',
     email: 'Email *',
     phone: 'Telefone *',
-    phoneHint: 'Formato: +5511999999999',
+    phoneHint: 'Formato: +código do país + número (ex: +5511999999999)',
     pep: 'Sou Pessoa Exposta Politicamente (PEP)',
     pepPosition: 'Cargo/Função',
     addressSection: 'Endereço *',

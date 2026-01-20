@@ -567,7 +567,7 @@ export function RegisterWizard() {
                   <FormField
                     name="userPhone"
                     label={copy.form.phone}
-                    placeholder="+5511999999999"
+                    placeholder="Ex: +5511999999999"
                     inputMode="tel"
                     mask={formatPhone}
                     hint={copy.form.phoneHint}
@@ -629,7 +629,7 @@ export function RegisterWizard() {
                   <FormField
                     name="companyPhone"
                     label={copy.form.companyPhone}
-                    placeholder="+5511999999999"
+                    placeholder="Ex: +5511999999999"
                     inputMode="tel"
                     mask={formatPhone}
                     hint={copy.form.phoneHint}
@@ -784,7 +784,7 @@ export function RegisterWizard() {
                   <FormField
                     name="majorityAdminPhone"
                     label={copy.form.adminPhone}
-                    placeholder="+5511999999999"
+                    placeholder="Ex: +5511999999999"
                     inputMode="tel"
                     mask={formatPhone}
                     hint={copy.form.phoneHint}
