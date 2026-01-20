@@ -71,7 +71,7 @@ export const submitForm = async (values: RegistrationInput) => {
   const docRef = await addDoc(collection(db, collectionName), {
     ...payload,
     ...lead,
-    status: 'pending',
+    status: 'confirmado',
     createdAt: serverTimestamp(),
   });
 

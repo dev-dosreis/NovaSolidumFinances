@@ -7,13 +7,7 @@ export type RegistrationStatus = 'pending' | 'approved' | 'rejected' | string;
 
 export interface RegistrationRecord {
   id: string;
-  accountType?: string;
-  fullName?: string;
-  companyName?: string;
-  cpf?: string;
-  cnpj?: string;
-  userEmail?: string;
-  companyEmail?: string;
+  data: Record<string, unknown>;
   status?: RegistrationStatus;
   createdAt?: Date | null;
 }
@@ -25,13 +19,7 @@ const mapSnapshot = (data: DocumentData): RegistrationRecord => {
 
   return {
     id: data.id,
-    accountType: data.accountType,
-    fullName: data.fullName,
-    companyName: data.companyName,
-    cpf: data.cpf,
-    cnpj: data.cnpj,
-    userEmail: data.userEmail,
-    companyEmail: data.companyEmail,
+    data,
     status: data.status,
     createdAt,
   };
