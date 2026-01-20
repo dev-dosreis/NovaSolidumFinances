@@ -4,6 +4,7 @@ import { copy } from '../../content/copy';
 import { formatBRL, formatPercent, formatTime } from '../../lib/format';
 import { cn } from '../../lib/utils';
 import { CryptoPrices, PriceStatus } from '../../hooks/useCryptoPrices';
+import type { PriceStatus as UsdPriceStatus } from '../../hooks/useUsdBrl';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -15,11 +16,15 @@ interface HeroProps {
   prices: CryptoPrices;
   status: PriceStatus;
   lastUpdated: Date | null;
+  usdRate?: { price: number | null; lastUpdated: Date | null };
+  usdStatus?: UsdPriceStatus;
 }
 
-export function Hero({ prices, status, lastUpdated }: HeroProps) {
+export function Hero({ prices, status, lastUpdated, usdRate, usdStatus }: HeroProps) {
   const usdt = prices.USDT;
-  const usdtMeta = copy.crypto.find((item) => item.symbol === 'USDT');
+  const usdPrice = usdRate?.price ?? usdt?.price ?? null;
+  const usdUpdated = usdRate?.lastUpdated ?? lastUpdated;
+  const hasUsdError = usdStatus === 'error';
 
   return (
     <Section id="inicio" className="relative overflow-hidden pt-16 md:pt-24">
@@ -35,7 +40,7 @@ export function Hero({ prices, status, lastUpdated }: HeroProps) {
                 <span>{copy.liveTicker.pair}</span>
                 <span className="text-muted-foreground">{copy.liveTicker.bullet}</span>
                 <span>{copy.liveTicker.status}</span>
-                <span className="text-muted-foreground">{formatTime(lastUpdated)}</span>
+                <span className="text-muted-foreground">{formatTime(usdUpdated)}</span>
               </Badge>
             </MotionInView>
             <MotionInView delay={0.05}>
@@ -115,23 +120,17 @@ export function Hero({ prices, status, lastUpdated }: HeroProps) {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-                        {usdtMeta ? (
-                          <img
-                            src={usdtMeta.icon}
-                            alt={`${usdtMeta.name} logo`}
-                            className="h-6 w-6"
-                          />
-                        ) : null}
+                        <span className="text-xs font-semibold text-muted-foreground">USD</span>
                       </div>
                       <p className="text-sm text-muted-foreground">{copy.liveTicker.pair}</p>
                     </div>
-                    <p className="text-3xl font-semibold text-foreground">{formatBRL(usdt?.price)}</p>
+                    <p className="text-3xl font-semibold text-foreground">{formatBRL(usdPrice)}</p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{copy.liveTicker.bullet}</span>
                       <span>{copy.liveTicker.status}</span>
-                      <span>{formatTime(lastUpdated)}</span>
+                      <span>{formatTime(usdUpdated)}</span>
                     </div>
-                    {status === 'error' ? (
+                    {status === 'error' || hasUsdError ? (
                       <p className="text-xs text-rose-600">Falha ao atualizar.</p>
                     ) : null}
                   </div>

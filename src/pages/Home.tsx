@@ -10,15 +10,17 @@ import { RegisterSection } from '../components/sections/RegisterSection';
 import { Steps } from '../components/sections/Steps';
 import { TradingSection } from '../components/sections/TradingSection';
 import { useCryptoPrices } from '../hooks/useCryptoPrices';
+import { useUsdBrl } from '../hooks/useUsdBrl';
 
 export function Home() {
   const { prices, status, lastUpdated } = useCryptoPrices();
+  const { rate: usdRate, status: usdStatus } = useUsdBrl();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
-        <Hero prices={prices} status={status} lastUpdated={lastUpdated} />
+        <Hero prices={prices} status={status} lastUpdated={lastUpdated} usdRate={usdRate} usdStatus={usdStatus} />
         <CotacaoSection prices={prices} status={status} lastUpdated={lastUpdated} />
         <Steps />
         <FeatureGrid />

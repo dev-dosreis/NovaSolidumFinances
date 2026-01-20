@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -29,6 +29,7 @@ let firebaseStorage: ReturnType<typeof getStorage> | null = null;
 if (hasFirebaseConfig) {
   firebaseApp = initializeApp(firebaseConfig);
   firebaseAuth = getAuth(firebaseApp);
+  void setPersistence(firebaseAuth, browserLocalPersistence);
   firestoreDb = getFirestore(firebaseApp);
   firebaseStorage = getStorage(firebaseApp);
 }
