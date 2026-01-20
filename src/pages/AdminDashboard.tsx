@@ -6,13 +6,26 @@ import { BrandLogo } from '../components/shared/BrandLogo';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { formatDateTime } from '../lib/format';
 import { auth } from '../lib/firebase';
 import { useAuthState } from '../hooks/useAuthState';
+import { useRegistrations } from '../hooks/useRegistrations';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const { user, status, isFirebaseConfigured } = useAuthState();
+  const { records, status: registrationsStatus } = useRegistrations();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const now = new Date();
+  const pendingCount = records.filter((record) => record.status === 'pending').length;
+  const approvedCount = records.filter((record) => record.status === 'approved').length;
+  const monthlyCount = records.filter(
+    (record) =>
+      record.createdAt &&
+      record.createdAt.getMonth() === now.getMonth() &&
+      record.createdAt.getFullYear() === now.getFullYear(),
+  ).length;
+  const isLoadingRecords = registrationsStatus === 'loading';
 
   const handleSignOut = async () => {
     if (!auth) return;
@@ -119,9 +132,9 @@ export function AdminDashboard() {
 
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { label: 'Registros pendentes', value: '--' },
-            { label: 'Registros aprovados', value: '--' },
-            { label: 'Total do mês', value: '--' },
+            { label: 'Registros pendentes', value: isLoadingRecords ? '--' : pendingCount },
+            { label: 'Registros aprovados', value: isLoadingRecords ? '--' : approvedCount },
+            { label: 'Total do mês', value: isLoadingRecords ? '--' : monthlyCount },
           ].map((item) => (
             <Card key={item.label} className="border-border/70 p-5">
               <p className="text-xs text-muted-foreground">{item.label}</p>
@@ -134,7 +147,7 @@ export function AdminDashboard() {
           <div className="border-b border-border/60 px-6 py-4">
             <h2 className="text-lg font-semibold text-foreground">Últimos registros</h2>
             <p className="text-xs text-muted-foreground">
-              Este painel será conectado ao Firestore para listar dados reais do formulário.
+              Os dados chegam em tempo real via Firestore.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -150,11 +163,62 @@ export function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-t border-border/60">
-                  <td className="px-6 py-6 text-sm text-muted-foreground" colSpan={6}>
-                    Nenhum registro disponível. Assim que o backend estiver ativo, os dados aparecerão aqui.
-                  </td>
-                </tr>
+                {registrationsStatus === 'loading' ? (
+                  <tr className="border-t border-border/60">
+                    <td className="px-6 py-6 text-sm text-muted-foreground" colSpan={6}>
+                      Carregando registros...
+                    </td>
+                  </tr>
+                ) : null}
+                {registrationsStatus === 'error' ? (
+                  <tr className="border-t border-border/60">
+                    <td className="px-6 py-6 text-sm text-rose-600" colSpan={6}>
+                      Falha ao carregar registros.
+                    </td>
+                  </tr>
+                ) : null}
+                {registrationsStatus === 'idle' && records.length === 0 ? (
+                  <tr className="border-t border-border/60">
+                    <td className="px-6 py-6 text-sm text-muted-foreground" colSpan={6}>
+                      Nenhum registro disponível no momento.
+                    </td>
+                  </tr>
+                ) : null}
+                {registrationsStatus === 'idle'
+                  ? records.map((record) => {
+                      const isCompany = record.accountType === 'PJ';
+                      const name = isCompany ? record.companyName : record.fullName;
+                      const doc = isCompany ? record.cnpj : record.cpf;
+                      const email = isCompany ? record.companyEmail : record.userEmail;
+                      const statusLabel =
+                        record.status === 'approved'
+                          ? 'Aprovado'
+                          : record.status === 'rejected'
+                            ? 'Rejeitado'
+                            : 'Pendente';
+                      const statusStyle =
+                        record.status === 'approved'
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          : record.status === 'rejected'
+                            ? 'border-rose-200 bg-rose-50 text-rose-700'
+                            : 'border-amber-200 bg-amber-50 text-amber-700';
+
+                      return (
+                        <tr key={record.id} className="border-t border-border/60">
+                          <td className="px-6 py-4 text-sm text-foreground">{name ?? '--'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">{record.accountType ?? '--'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">{doc ?? '--'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">{email ?? '--'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            <Badge className={statusStyle}>{statusLabel}</Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            {formatDateTime(record.createdAt)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : null}
               </tbody>
             </table>
           </div>

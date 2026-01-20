@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  getRedirectResult,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+} from 'firebase/auth';
 
 import { BrandLogo } from '../components/shared/BrandLogo';
 import { Button } from '../components/ui/button';
@@ -25,6 +31,7 @@ type SubmitStatus = 'idle' | 'loading';
 export function Login() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<SubmitStatus>('idle');
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
@@ -37,6 +44,43 @@ export function Login() {
       password: '',
     },
   });
+
+  useEffect(() => {
+    if (!isFirebaseConfigured || !auth) return;
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          navigate('/admin');
+        }
+      })
+      .catch(() => null);
+  }, [navigate]);
+
+  const handleGoogleLogin = async () => {
+    if (!isFirebaseConfigured || !auth) {
+      setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
+      return;
+    }
+
+    setIsGoogleLoading(true);
+    setSubmitError(null);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate('/admin');
+    } catch (error) {
+      const code = (error as { code?: string } | null)?.code ?? '';
+      if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+        const provider = new GoogleAuthProvider();
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+      setSubmitError('Não foi possível entrar com Google.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const onSubmit = async (values: LoginForm) => {
     if (!isFirebaseConfigured || !auth) {
@@ -88,6 +132,26 @@ export function Login() {
               </div>
             ) : null}
 
+            <div className="mt-6 space-y-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleLogin}
+                disabled={status === 'loading' || isGoogleLoading}
+              >
+                <span className="mr-2 flex h-6 w-6 items-center justify-center rounded-full border border-border/60 text-xs font-semibold">
+                  G
+                </span>
+                {isGoogleLoading ? 'Conectando...' : 'Entrar com Google'}
+              </Button>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="h-px flex-1 bg-border/60" />
+                ou
+                <span className="h-px flex-1 bg-border/60" />
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -118,7 +182,7 @@ export function Login() {
               <Button
                 type="submit"
                 className={cn('w-full', status === 'loading' && 'pointer-events-none opacity-80')}
-                disabled={status === 'loading'}
+                disabled={status === 'loading' || isGoogleLoading}
               >
                 {status === 'loading' ? 'Entrando...' : 'Entrar'}
               </Button>

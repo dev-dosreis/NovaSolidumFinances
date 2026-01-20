@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { copy } from '../../content/copy';
+import { submitRegistration } from '../../lib/registrations';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -449,13 +450,12 @@ export function RegisterWizard() {
   };
 
   const onSubmit = async (data: FormValues) => {
-    void data;
     setStatus('submitting');
     try {
       if (!navigator.onLine) {
         throw new Error('offline');
       }
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await submitRegistration(data);
       setStatus('success');
     } catch (error) {
       console.error(error);
