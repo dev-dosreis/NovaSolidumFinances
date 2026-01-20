@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { copy } from '../../content/copy';
-import { createRegistration, uploadRegistrationDocuments } from '../../lib/registrations';
+import { submitForm, uploadRegistrationDocuments } from '../../lib/registrations';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -455,11 +455,11 @@ export function RegisterWizard() {
       if (!navigator.onLine) {
         throw new Error('offline');
       }
-      const docId = await createRegistration(data);
+      const docId = await submitForm(data);
       await uploadRegistrationDocuments(docId, data);
       setStatus('success');
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      console.log('🔥 firebase error:', err?.code, err?.message);
       setStatus('error');
     }
   };
