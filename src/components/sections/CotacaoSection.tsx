@@ -28,10 +28,11 @@ function getPosition(value?: number | null, low?: number | null, high?: number |
   return clamp(((value - low) / (high - low)) * 100);
 }
 
-const forexTimezone = 'America/New_York';
-const forexCloseMinutes = 17 * 60;
+const marketTimezone = 'America/Sao_Paulo';
+const marketOpenMinutes = 9 * 60;
+const marketCloseMinutes = 18 * 60;
 
-const forexWeekdayMap: Record<string, number> = {
+const weekdayMap: Record<string, number> = {
   Sun: 0,
   Mon: 1,
   Tue: 2,
@@ -41,9 +42,9 @@ const forexWeekdayMap: Record<string, number> = {
   Sat: 6,
 };
 
-function getForexTimeParts(date: Date) {
+function getMarketTimeParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: forexTimezone,
+    timeZone: marketTimezone,
     weekday: 'short',
     hour: '2-digit',
     minute: '2-digit',
@@ -55,19 +56,59 @@ function getForexTimeParts(date: Date) {
   const minute = Number(parts.find((part) => part.type === 'minute')?.value ?? '0');
 
   return {
-    weekday: forexWeekdayMap[weekday] ?? -1,
+    weekday: weekdayMap[weekday] ?? -1,
     minutes: hour * 60 + minute,
   };
 }
 
-function isForexMarketOpen(date: Date) {
-  const { weekday, minutes } = getForexTimeParts(date);
+function isBusinessDay(weekday: number) {
+  return weekday >= 1 && weekday <= 5;
+}
 
-  if (weekday === 6) return false;
-  if (weekday === 0) return minutes >= forexCloseMinutes;
-  if (weekday === 5) return minutes < forexCloseMinutes;
-  if (weekday >= 1 && weekday <= 4) return true;
-  return true;
+function isMarketOpen(date: Date) {
+  const { weekday, minutes } = getMarketTimeParts(date);
+  if (!isBusinessDay(weekday)) return false;
+  return minutes >= marketOpenMinutes && minutes < marketCloseMinutes;
+}
+
+function minutesUntilNextOpen(date: Date) {
+  const { weekday, minutes } = getMarketTimeParts(date);
+  if (isBusinessDay(weekday) && minutes < marketOpenMinutes) {
+    return marketOpenMinutes - minutes;
+  }
+
+  let daysAhead = 0;
+  let currentWeekday = weekday;
+  let minutesLeftToday = 24 * 60 - minutes;
+  let totalMinutes = 0;
+
+  if (minutesLeftToday < 0) {
+    minutesLeftToday = 0;
+  }
+
+  while (daysAhead < 7) {
+    totalMinutes += daysAhead === 0 ? minutesLeftToday : 24 * 60;
+    currentWeekday = (weekday + daysAhead + 1) % 7;
+    if (isBusinessDay(currentWeekday)) {
+      totalMinutes += marketOpenMinutes;
+      break;
+    }
+    daysAhead += 1;
+  }
+
+  return totalMinutes;
+}
+
+function minutesUntilClose(date: Date) {
+  const { minutes } = getMarketTimeParts(date);
+  return Math.max(marketCloseMinutes - minutes, 0);
+}
+
+function formatCountdown(minutes: number) {
+  const safeMinutes = Math.max(minutes, 0);
+  const hours = Math.floor(safeMinutes / 60);
+  const mins = safeMinutes % 60;
+  return `${hours}h ${String(mins).padStart(2, '0')}m`;
 }
 
 export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionProps) {
@@ -83,7 +124,11 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
   const dailyPosition = getPosition(usdt?.price, usdt?.low24h ?? null, usdt?.high24h ?? null);
   const yearPosition = getPosition(usdt?.price, range.low, range.high);
   const [now, setNow] = useState(() => new Date());
-  const isMarketOpen = useMemo(() => isForexMarketOpen(now), [now]);
+  const marketIsOpen = useMemo(() => isMarketOpen(now), [now]);
+  const marketCountdown = useMemo(
+    () => (marketIsOpen ? minutesUntilClose(now) : minutesUntilNextOpen(now)),
+    [marketIsOpen, now],
+  );
 
   useEffect(() => {
     setNow(new Date());
@@ -104,18 +149,31 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
             <div className="flex flex-col gap-4 border-b border-border/60 p-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-foreground md:text-2xl">Cotação em Tempo Real</h2>
-                <p className="text-sm text-muted-foreground">USD/BRL • Valores sem spread</p>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <span>USDT/BRL • Valores sem spread</span>
+                  <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full border border-border/60">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                        <circle cx="12" cy="12" r="8" />
+                        <path d="M12 8v4l3 2" />
+                      </svg>
+                    </span>
+                    {marketIsOpen
+                      ? `Fecha em ${formatCountdown(marketCountdown)}`
+                      : `Abre em ${formatCountdown(marketCountdown)}`}
+                  </span>
+                </div>
               </div>
               <Badge
                 className={cn(
                   'w-fit',
-                  isMarketOpen
+                  marketIsOpen
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                    : 'border-amber-200 bg-amber-50 text-amber-700',
+                    : 'border-rose-200 bg-rose-50 text-rose-700',
                 )}
               >
-                <span className={cn('h-2 w-2 rounded-full', isMarketOpen ? 'bg-emerald-500' : 'bg-amber-500')} />
-                {isMarketOpen ? 'Mercado Aberto' : 'Mercado Fechado'}
+                <span className={cn('h-2 w-2 rounded-full', marketIsOpen ? 'bg-emerald-500' : 'bg-rose-500')} />
+                {marketIsOpen ? 'Mercado Aberto' : 'Mercado Fechado'}
               </Badge>
             </div>
 
@@ -195,7 +253,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Mercado stablecoin{bookStatus === 'error' ? ' (indisponível)' : ''}
+                        Mercado internacional{bookStatus === 'error' ? ' (indisponível)' : ''}
                       </p>
                     </div>
                   </Card>
@@ -218,7 +276,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                             <path d="M8 15h6" />
                           </svg>
                         </span>
-                        USD - Livro de Ofertas
+                        PTAX - Banco Central
                       </div>
                       <span className="text-xs text-muted-foreground">?</span>
                     </div>
@@ -237,7 +295,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                       </div>
                     </div>
                     <p className="mt-4 text-xs text-muted-foreground">
-                      Último disponível • {formatDateTime(book.updatedAt ?? lastUpdated)}
+                      Fechamento • {formatDateTime(book.updatedAt ?? lastUpdated)}
                     </p>
                   </Card>
 
