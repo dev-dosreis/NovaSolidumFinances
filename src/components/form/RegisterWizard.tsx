@@ -449,6 +449,7 @@ export function RegisterWizard() {
   };
 
   const onSubmit = async (data: FormValues) => {
+    void data;
     setStatus('submitting');
     try {
       if (!navigator.onLine) {
