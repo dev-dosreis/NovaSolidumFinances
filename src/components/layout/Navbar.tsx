@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 import { copy } from '../../content/copy';
 import { cn } from '../../lib/utils';
@@ -32,8 +33,8 @@ export function Navbar() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
-          <Button variant="outline" size="sm">
-            {copy.nav.login}
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/login">{copy.nav.login}</Link>
           </Button>
           <a href="#registro">
             <Button size="sm">{copy.nav.start}</Button>
@@ -71,8 +72,8 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <Button variant="outline" size="lg">
-                {copy.nav.login}
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/login">{copy.nav.login}</Link>
               </Button>
               <a href="#registro" onClick={() => setOpen(false)}>
                 <Button className="w-full" size="lg">
