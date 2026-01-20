@@ -22,7 +22,7 @@ export const copy = {
     { name: 'USD Coin', symbol: 'USDC', icon: '/assets/coins/usdc.png' },
   ],
   liveTicker: {
-    pair: 'USDT/BRL',
+    pair: 'USD/BRL',
     status: 'Ao Vivo',
     bullet: '•',
   },
