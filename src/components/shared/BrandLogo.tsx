@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { BrandMark } from './BrandMark';
 
-const LOGO_SOURCES = ['/assets/logo-nova-solidum.jpeg', '/assets/logo-nova-solidum.png'];
+const LOGO_SOURCES = ['/assets/logo-nova-solidum.png', '/assets/logo-nova-solidum.jpeg'];
 
 interface BrandLogoProps {
   className?: string;
