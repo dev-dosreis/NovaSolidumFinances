@@ -6,6 +6,7 @@ import { BrandLogo } from '../components/shared/BrandLogo';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { hasAdminAllowlist, isAdminEmail } from '../lib/admin';
 import { formatDateTime } from '../lib/format';
 import { auth } from '../lib/firebase';
 import { useAuthState } from '../hooks/useAuthState';
@@ -93,6 +94,50 @@ export function AdminDashboard() {
                 <Link to="/login">Ir para login</Link>
               </Button>
               <Button variant="outline" asChild>
+                <Link to="/">Voltar ao site</Link>
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAdminAllowlist) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6">
+          <Card className="border-border/70 p-8">
+            <h1 className="text-2xl font-semibold">Painel administrativo</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Defina a variável <span className="font-semibold">VITE_ADMIN_EMAILS</span> para restringir o acesso ao
+              painel.
+            </p>
+            <div className="mt-6">
+              <Button variant="outline" onClick={handleSignOut} disabled={isSigningOut}>
+                {isSigningOut ? 'Saindo...' : 'Sair'}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdminEmail(user.email)) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6">
+          <Card className="border-border/70 p-8">
+            <h1 className="text-2xl font-semibold">Acesso não autorizado</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Este usuário não está liberado para acessar o painel administrativo.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Button variant="outline" onClick={handleSignOut} disabled={isSigningOut}>
+                {isSigningOut ? 'Saindo...' : 'Sair'}
+              </Button>
+              <Button asChild>
                 <Link to="/">Voltar ao site</Link>
               </Button>
             </div>

@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
+  signOut,
 } from 'firebase/auth';
 
 import { BrandLogo } from '../components/shared/BrandLogo';
@@ -16,6 +17,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { hasAdminAllowlist, isAdminEmail } from '../lib/admin';
 import { auth, isFirebaseConfigured } from '../lib/firebase';
 import { cn } from '../lib/utils';
 
@@ -50,6 +52,14 @@ export function Login() {
     getRedirectResult(auth)
       .then((result) => {
         if (result?.user) {
+          if (!hasAdminAllowlist) {
+            setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
+            return signOut(auth);
+          }
+          if (!isAdminEmail(result.user.email)) {
+            setSubmitError('Seu email não está autorizado para o painel.');
+            return signOut(auth);
+          }
           navigate('/admin');
         }
       })
@@ -61,13 +71,22 @@ export function Login() {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
+    if (!hasAdminAllowlist) {
+      setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
+      return;
+    }
 
     setIsGoogleLoading(true);
     setSubmitError(null);
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      if (!isAdminEmail(result.user.email)) {
+        setSubmitError('Seu email não está autorizado para o painel.');
+        await signOut(auth);
+        return;
+      }
       navigate('/admin');
     } catch (error) {
       const code = (error as { code?: string } | null)?.code ?? '';
@@ -87,10 +106,19 @@ export function Login() {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
+    if (!hasAdminAllowlist) {
+      setSubmitError('Defina VITE_ADMIN_EMAILS para liberar o acesso admin.');
+      return;
+    }
     setStatus('loading');
     setSubmitError(null);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const result = await signInWithEmailAndPassword(auth, values.email, values.password);
+      if (!isAdminEmail(result.user.email)) {
+        setSubmitError('Seu email não está autorizado para o painel.');
+        await signOut(auth);
+        return;
+      }
       navigate('/admin');
     } catch (error) {
       setSubmitError('Credenciais inválidas ou acesso não autorizado.');
