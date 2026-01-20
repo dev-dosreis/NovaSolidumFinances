@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { copy } from '../../content/copy';
 import { cn } from '../../lib/utils';
-import { BrandMark } from '../shared/BrandMark';
+import { BrandLogo } from '../shared/BrandLogo';
 import { Button } from '../ui/button';
 import { Container } from './Container';
 
@@ -16,23 +16,13 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const brandWords = copy.brand.split(' ');
-  const brandPrimary = brandWords.slice(0, 2).join(' ');
-  const brandSecondary = brandWords.slice(2).join(' ');
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur">
       <Container className="flex items-center justify-between py-4">
         <a href="#inicio" className="flex items-center gap-3">
-          <BrandMark />
-          <div className="leading-tight">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-navy font-display">
-              {brandPrimary}
-            </p>
-            <p className="text-xs uppercase tracking-[0.32em] text-muted-foreground font-display">
-              {brandSecondary}
-            </p>
-          </div>
+          <BrandLogo className="h-9 sm:h-10" />
+          <span className="sr-only">{copy.brand}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground lg:flex">
           {links.map((link) => (

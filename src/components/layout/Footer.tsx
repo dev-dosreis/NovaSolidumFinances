@@ -1,12 +1,8 @@
 import { copy } from '../../content/copy';
-import { BrandMark } from '../shared/BrandMark';
+import { BrandLogo } from '../shared/BrandLogo';
 import { Container } from './Container';
 
 export function Footer() {
-  const brandWords = copy.brand.split(' ');
-  const brandPrimary = brandWords.slice(0, 2).join(' ');
-  const brandSecondary = brandWords.slice(2).join(' ');
-
   return (
     <footer className="border-t border-border/70 bg-white">
       <Container className="space-y-10 py-12">
@@ -30,15 +26,8 @@ export function Footer() {
         </p>
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground md:flex-row">
           <div className="flex items-center gap-3">
-            <BrandMark className="h-9 w-9" />
-            <div className="leading-tight">
-              <p className="text-[11px] uppercase tracking-[0.28em] text-brand-navy font-display">
-                {brandPrimary}
-              </p>
-              <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground font-display">
-                {brandSecondary}
-              </p>
-            </div>
+            <BrandLogo className="h-8 sm:h-9" />
+            <span className="sr-only">{copy.brand}</span>
           </div>
           <a
             href="https://wa.me/5511914998141"

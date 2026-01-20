@@ -4,7 +4,7 @@ import { copy } from '../../content/copy';
 import { formatBRL, formatDateTime, formatDecimal, formatPercent, formatTime } from '../../lib/format';
 import { cn } from '../../lib/utils';
 import { CryptoPrices, PriceStatus } from '../../hooks/useCryptoPrices';
-import { usePtax } from '../../hooks/usePtax';
+import { useUsdtBookTicker } from '../../hooks/useUsdtBookTicker';
 import { useUsdtYearRange } from '../../hooks/useUsdtYearRange';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -32,12 +32,12 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
   const usdt = prices.USDT;
   const usdtMeta = copy.crypto.find((item) => item.symbol === 'USDT');
   const { range } = useUsdtYearRange();
-  const { data: ptax, status: ptaxStatus } = usePtax();
+  const { data: book, status: bookStatus } = useUsdtBookTicker();
   const isDown = (usdt?.change24h ?? 0) < 0;
   const previousClose = usdt ? usdt.price - usdt.changeAmount24h : null;
-  const ptaxBuy = ptax.buy;
-  const ptaxSell = ptax.sell;
-  const ptaxMid = ptax.buy && ptax.sell ? (ptax.buy + ptax.sell) / 2 : null;
+  const bookBid = book.bid ?? usdt?.price ?? null;
+  const bookAsk = book.ask ?? usdt?.price ?? null;
+  const bookMid = bookBid && bookAsk ? (bookBid + bookAsk) / 2 : usdt?.price ?? null;
   const dailyPosition = getPosition(usdt?.price, usdt?.low24h ?? null, usdt?.high24h ?? null);
   const yearPosition = getPosition(usdt?.price, range.low, range.high);
   const now = useMemo(() => new Date(), [lastUpdated]);
@@ -120,21 +120,21 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/70 text-xs font-semibold">
                           FX
                         </div>
-                        USDBRL
+                        USDTBRL
                       </div>
                       <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                        Dólar americano / Real brasileiro
+                        Tether / Real brasileiro
                       </p>
                       <div className="flex items-baseline gap-3">
                         <span className="text-2xl font-semibold text-foreground">
-                          {formatDecimal(ptaxMid ?? usdt?.price, 4)}
+                          {formatDecimal(bookMid ?? usdt?.price, 4)}
                         </span>
                         <span className={cn(isDown ? 'text-rose-600' : 'text-emerald-600')}>
                           {formatPercent(usdt?.change24h)}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Mercado internacional{ptaxStatus === 'error' ? ' (indisponível)' : ''}
+                        Mercado stablecoin{bookStatus === 'error' ? ' (indisponível)' : ''}
                       </p>
                     </div>
                   </Card>
@@ -157,7 +157,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                             <path d="M8 15h6" />
                           </svg>
                         </span>
-                        PTAX - Banco Central
+                        USDT - Livro de Ofertas
                       </div>
                       <span className="text-xs text-muted-foreground">?</span>
                     </div>
@@ -165,18 +165,18 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground">Compra</p>
                         <p className="text-lg font-semibold text-foreground">
-                          {formatBRL(ptaxBuy, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+                          {formatBRL(bookBid, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
                         </p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground">Venda</p>
                         <p className="text-lg font-semibold text-foreground">
-                          {formatBRL(ptaxSell, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
+                          {formatBRL(bookAsk, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
                         </p>
                       </div>
                     </div>
                     <p className="mt-4 text-xs text-muted-foreground">
-                      Último disponível • {formatDateTime(ptax.date ?? lastUpdated)}
+                      Último disponível • {formatDateTime(book.updatedAt ?? lastUpdated)}
                     </p>
                   </Card>
 
@@ -227,7 +227,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                         <p>{formatDateTime(lastUpdated)}</p>
                       </div>
                     </div>
-                    {status === 'error' || ptaxStatus === 'error' ? (
+                    {status === 'error' || bookStatus === 'error' ? (
                       <p className="mt-3 text-rose-600">Falha ao atualizar.</p>
                     ) : null}
                   </div>
