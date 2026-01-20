@@ -516,13 +516,13 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <Link to="/" className="flex items-center gap-3">
             <BrandLogo className="h-9" />
             <span className="sr-only">Nova Solidum Finances</span>
           </Link>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="max-w-[220px] truncate sm:max-w-none">{user.email}</span>
+          <div className="flex w-full flex-col items-start gap-2 text-sm text-muted-foreground sm:w-auto sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+            <span className="w-full truncate sm:w-auto sm:max-w-none">{user.email}</span>
             <Button variant="outline" size="sm" onClick={handleSignOut} disabled={isSigningOut}>
               {isSigningOut ? 'Saindo...' : 'Sair'}
             </Button>
