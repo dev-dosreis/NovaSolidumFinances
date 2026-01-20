@@ -133,14 +133,20 @@ export function AdminDashboard() {
     setDeletingIds((prev) => ({ ...prev, [docId]: true }));
 
     let fileDeleteFailed = false;
+    let fileReadFailed = false;
+    let filesSnapshot: Awaited<ReturnType<typeof getDocs>> | null = null;
 
     try {
       const filesQuery = query(collection(dbInstance, 'registrations', docId, 'files'));
-      const snapshot = await getDocs(filesQuery);
+      try {
+        filesSnapshot = await getDocs(filesQuery);
+      } catch {
+        fileReadFailed = true;
+      }
 
-      if (storageInstance) {
+      if (storageInstance && filesSnapshot) {
         await Promise.all(
-          snapshot.docs.map(async (docSnap) => {
+          filesSnapshot.docs.map(async (docSnap) => {
             const data = docSnap.data() as { path?: string };
             if (!data.path) return;
             try {
@@ -152,15 +158,17 @@ export function AdminDashboard() {
         );
       }
 
-      await Promise.all(
-        snapshot.docs.map(async (docSnap) => {
-          try {
-            await deleteDoc(doc(dbInstance, 'registrations', docId, 'files', docSnap.id));
-          } catch {
-            fileDeleteFailed = true;
-          }
-        }),
-      );
+      if (filesSnapshot) {
+        await Promise.all(
+          filesSnapshot.docs.map(async (docSnap) => {
+            try {
+              await deleteDoc(doc(dbInstance, 'registrations', docId, 'files', docSnap.id));
+            } catch {
+              fileDeleteFailed = true;
+            }
+          }),
+        );
+      }
 
       await deleteDoc(doc(dbInstance, 'registrations', docId));
 
@@ -172,10 +180,12 @@ export function AdminDashboard() {
       if (expandedId === docId) {
         setExpandedId(null);
       }
-      if (fileDeleteFailed) {
+      if (fileDeleteFailed || fileReadFailed) {
         setDeleteError('Registro excluído, mas alguns arquivos não puderam ser removidos.');
       }
-    } catch {
+    } catch (error) {
+      const code = (error as { code?: string } | null)?.code ?? '';
+      console.log('🔥 firebase delete error:', code, (error as { message?: string } | null)?.message);
       setDeleteError('Não foi possível excluir o registro.');
     } finally {
       setDeletingIds((prev) => ({ ...prev, [docId]: false }));
