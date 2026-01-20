@@ -1,8 +1,8 @@
 import { Fragment, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
 
 import { copy } from '../content/copy';
 import { BrandLogo } from '../components/shared/BrandLogo';
@@ -39,6 +39,8 @@ export function AdminDashboard() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filesById, setFilesById] = useState<Record<string, AdminFile[]>>({});
   const [filesStatus, setFilesStatus] = useState<Record<string, 'idle' | 'loading' | 'error'>>({});
+  const [deletingIds, setDeletingIds] = useState<Record<string, boolean>>({});
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const now = new Date();
   const confirmedCount = records.filter((record) => (record.status ?? 'confirmado') === 'confirmado').length;
   const pendingCount = records.filter((record) => record.status === 'pending').length;
@@ -100,6 +102,67 @@ export function AdminDashboard() {
       }
       return next;
     });
+  };
+
+  const handleDelete = async (docId: string, name?: string | null) => {
+    if (!db) return;
+
+    const confirmation = name
+      ? `Deseja excluir o cadastro de ${name}?`
+      : 'Deseja excluir este cadastro?';
+    if (!window.confirm(confirmation)) return;
+
+    setDeleteError(null);
+    setDeletingIds((prev) => ({ ...prev, [docId]: true }));
+
+    let fileDeleteFailed = false;
+
+    try {
+      const filesQuery = query(collection(db, 'registrations', docId, 'files'));
+      const snapshot = await getDocs(filesQuery);
+
+      if (storage) {
+        await Promise.all(
+          snapshot.docs.map(async (docSnap) => {
+            const data = docSnap.data() as { path?: string };
+            if (!data.path) return;
+            try {
+              await deleteObject(ref(storage, data.path));
+            } catch {
+              fileDeleteFailed = true;
+            }
+          }),
+        );
+      }
+
+      await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          try {
+            await deleteDoc(doc(db, 'registrations', docId, 'files', docSnap.id));
+          } catch {
+            fileDeleteFailed = true;
+          }
+        }),
+      );
+
+      await deleteDoc(doc(db, 'registrations', docId));
+
+      setFilesById((prev) => {
+        const next = { ...prev };
+        delete next[docId];
+        return next;
+      });
+      if (expandedId === docId) {
+        setExpandedId(null);
+      }
+      if (fileDeleteFailed) {
+        setDeleteError('Registro excluído, mas alguns arquivos não puderam ser removidos.');
+      }
+    } catch {
+      setDeleteError('Não foi possível excluir o registro.');
+    } finally {
+      setDeletingIds((prev) => ({ ...prev, [docId]: false }));
+    }
   };
 
   const renderField = (label: string, value: unknown, key: string) => {
@@ -258,6 +321,9 @@ export function AdminDashboard() {
               Os dados chegam em tempo real via Firestore.
             </p>
           </div>
+          {deleteError ? (
+            <div className="border-b border-border/60 px-6 py-3 text-xs text-rose-600">{deleteError}</div>
+          ) : null}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
@@ -386,6 +452,7 @@ export function AdminDashboard() {
                       const files = filesById[record.id] ?? [];
                       const fileStatus = filesStatus[record.id] ?? 'idle';
                       const isExpanded = expandedId === record.id;
+                      const isDeleting = Boolean(deletingIds[record.id]);
                       const fileLabels: Record<string, string> = {
                         documentFront: copy.form.docFront,
                         documentBack: copy.form.docBack,
@@ -419,6 +486,16 @@ export function AdminDashboard() {
                                   onClick={() => toggleExpanded(record.id)}
                                 >
                                   {isExpanded ? 'Fechar' : 'Ver detalhes'}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                                  onClick={() => handleDelete(record.id, (name as string) ?? null)}
+                                  disabled={isDeleting}
+                                >
+                                  {isDeleting ? 'Excluindo...' : 'Excluir'}
                                 </Button>
                               </div>
                             </td>
