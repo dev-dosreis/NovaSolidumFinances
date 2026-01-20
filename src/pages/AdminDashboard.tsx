@@ -1,7 +1,8 @@
 import { Fragment, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { getDownloadURL, listAll, ref } from 'firebase/storage';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 import { copy } from '../content/copy';
 import { BrandLogo } from '../components/shared/BrandLogo';
@@ -10,11 +11,11 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { hasAdminAllowlist, isAdminEmail } from '../lib/admin';
 import { formatDateTime } from '../lib/format';
-import { auth, storage } from '../lib/firebase';
+import { auth, db, storage } from '../lib/firebase';
 import { useAuthState } from '../hooks/useAuthState';
 import { useRegistrations } from '../hooks/useRegistrations';
 
-type AdminFile = { name: string; url: string; path: string };
+type AdminFile = { id: string; name: string; url: string; path: string; field?: string; size?: number };
 
 type FieldDefinition = { label: string; key: string };
 
@@ -61,17 +62,28 @@ export function AdminDashboard() {
   };
 
   const loadFiles = async (docId: string) => {
-    if (!storage) return;
+    if (!storage || !db) return;
     setFilesStatus((prev) => ({ ...prev, [docId]: 'loading' }));
     try {
-      const listRef = ref(storage, `registrations/${docId}`);
-      const list = await listAll(listRef);
+      const filesQuery = query(
+        collection(db, 'registrations', docId, 'files'),
+        orderBy('createdAt', 'desc'),
+      );
+      const snapshot = await getDocs(filesQuery);
       const files = await Promise.all(
-        list.items.map(async (item) => ({
-          name: item.name,
-          path: item.fullPath,
-          url: await getDownloadURL(item),
-        })),
+        snapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data() as { name?: string; path?: string; field?: string; size?: number };
+          const path = data.path ?? '';
+          const url = path ? await getDownloadURL(ref(storage, path)) : '';
+          return {
+            id: docSnap.id,
+            name: data.name ?? path.split('/').pop() ?? 'Arquivo',
+            path,
+            url,
+            field: data.field,
+            size: data.size,
+          };
+        }),
       );
       setFilesById((prev) => ({ ...prev, [docId]: files }));
       setFilesStatus((prev) => ({ ...prev, [docId]: 'idle' }));
@@ -395,6 +407,18 @@ export function AdminDashboard() {
                       const files = filesById[record.id] ?? [];
                       const fileStatus = filesStatus[record.id] ?? 'idle';
                       const isExpanded = expandedId === record.id;
+                      const fileLabels: Record<string, string> = {
+                        documentFront: copy.form.docFront,
+                        documentBack: copy.form.docBack,
+                        selfie: copy.form.selfie,
+                        proofOfAddress: copy.form.proofOfAddress,
+                        articlesOfAssociation: copy.form.articles,
+                        cnpjCard: copy.form.cnpjCard,
+                        adminIdFront: copy.form.adminIdFront,
+                        adminIdBack: copy.form.adminIdBack,
+                        companyProofOfAddress: copy.form.companyProof,
+                        ecnpjCertificate: copy.form.ecnpj,
+                      };
 
                       return (
                         <Fragment key={record.id}>
@@ -475,18 +499,30 @@ export function AdminDashboard() {
                                         <ul className="space-y-2">
                                           {files.map((file) => (
                                             <li
-                                              key={file.path}
+                                              key={file.id}
                                               className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2"
                                             >
-                                              <span className="text-xs text-muted-foreground">{file.name}</span>
-                                              <a
-                                                href={file.url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="text-xs font-medium text-primary"
-                                              >
-                                                Abrir arquivo
-                                              </a>
+                                              <div className="flex flex-col text-xs text-muted-foreground">
+                                                <span className="font-medium text-foreground">
+                                                  {file.field ? fileLabels[file.field] ?? file.field : 'Documento'}
+                                                </span>
+                                                <span>{file.name}</span>
+                                                {file.size ? (
+                                                  <span>{(file.size / 1024 / 1024).toFixed(2)}MB</span>
+                                                ) : null}
+                                              </div>
+                                              {file.url ? (
+                                                <a
+                                                  href={file.url}
+                                                  target="_blank"
+                                                  rel="noreferrer"
+                                                  className="text-xs font-medium text-primary"
+                                                >
+                                                  Abrir arquivo
+                                                </a>
+                                              ) : (
+                                                <span className="text-xs text-muted-foreground">Indisponível</span>
+                                              )}
                                             </li>
                                           ))}
                                         </ul>

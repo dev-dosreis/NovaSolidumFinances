@@ -1,5 +1,5 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 import type { FormValues } from '../components/form/types';
 import { db, isFirebaseConfigured } from './firebase';
@@ -84,16 +84,37 @@ export const uploadFile = async (docId: string, file: File) => {
   const path = `registrations/${docId}/${Date.now()}-${safeName}`;
   const fileRef = ref(storage, path);
   await uploadBytes(fileRef, file);
-  return await getDownloadURL(fileRef);
+  return {
+    name: file.name,
+    path,
+    size: file.size,
+    type: file.type,
+  };
 };
 
 export const uploadRegistrationDocuments = async (submissionId: string, values: RegistrationInput) => {
-  const uploads: Record<string, string> = {};
+  if (!isFirebaseConfigured || !db) {
+    throw new Error('firebase-not-configured');
+  }
+
+  const uploads: Array<{
+    field: string;
+    name: string;
+    path: string;
+    size: number;
+    type: string;
+  }> = [];
 
   for (const field of FILE_FIELDS) {
     const file = values[field];
     if (!(file instanceof File)) continue;
-    uploads[field] = await uploadFile(submissionId, file);
+    const meta = await uploadFile(submissionId, file);
+    uploads.push({ field: String(field), ...meta });
+    await addDoc(collection(db, collectionName, submissionId, 'files'), {
+      field: String(field),
+      ...meta,
+      createdAt: serverTimestamp(),
+    });
   }
 
   return uploads;
