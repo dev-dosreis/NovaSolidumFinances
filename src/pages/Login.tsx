@@ -35,13 +35,14 @@ export function Login() {
   });
 
   useEffect(() => {
-    if (!isFirebaseConfigured || !auth) return;
-    getRedirectResult(auth)
+    const authInstance = auth;
+    if (!isFirebaseConfigured || !authInstance) return;
+    getRedirectResult(authInstance)
       .then((result) => {
         if (result?.user) {
           if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
             setSubmitError('Seu email não está autorizado para o painel.');
-            return signOut(auth);
+            return signOut(authInstance);
           }
           navigate('/admin');
         }
@@ -50,7 +51,8 @@ export function Login() {
   }, [navigate]);
 
   const handleGoogleLogin = async () => {
-    if (!isFirebaseConfigured || !auth) {
+    const authInstance = auth;
+    if (!isFirebaseConfigured || !authInstance) {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
@@ -60,10 +62,10 @@ export function Login() {
 
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(authInstance, provider);
       if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
         setSubmitError('Seu email não está autorizado para o painel.');
-        await signOut(auth);
+        await signOut(authInstance);
         return;
       }
       navigate('/admin');
@@ -71,7 +73,7 @@ export function Login() {
       const code = (error as { code?: string } | null)?.code ?? '';
       if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
         const provider = new GoogleAuthProvider();
-        await signInWithRedirect(auth, provider);
+        await signInWithRedirect(authInstance, provider);
         return;
       }
       setSubmitError('Não foi possível entrar com Google.');
@@ -81,17 +83,18 @@ export function Login() {
   };
 
   const handleEmailLogin = async (values: LoginFormValues) => {
-    if (!isFirebaseConfigured || !auth) {
+    const authInstance = auth;
+    if (!isFirebaseConfigured || !authInstance) {
       setSubmitError('Firebase não configurado. Defina as variáveis de ambiente.');
       return;
     }
 
     setSubmitError(null);
     try {
-      const result = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const result = await signInWithEmailAndPassword(authInstance, values.email, values.password);
       if (hasAdminAllowlist && !isAdminEmail(result.user.email)) {
         setSubmitError('Seu email não está autorizado para o painel.');
-        await signOut(auth);
+        await signOut(authInstance);
         return;
       }
       navigate('/admin');

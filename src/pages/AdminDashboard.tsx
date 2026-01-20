@@ -77,11 +77,13 @@ export function AdminDashboard() {
   };
 
   const loadFiles = async (docId: string) => {
-    if (!storage || !db) return;
+    const dbInstance = db;
+    const storageInstance = storage;
+    if (!dbInstance) return;
     setFilesStatus((prev) => ({ ...prev, [docId]: 'loading' }));
     try {
       const filesQuery = query(
-        collection(db, 'registrations', docId, 'files'),
+        collection(dbInstance, 'registrations', docId, 'files'),
         orderBy('createdAt', 'desc'),
       );
       const snapshot = await getDocs(filesQuery);
@@ -89,7 +91,7 @@ export function AdminDashboard() {
         snapshot.docs.map(async (docSnap) => {
           const data = docSnap.data() as { name?: string; path?: string; field?: string; size?: number };
           const path = data.path ?? '';
-          const url = path ? await getDownloadURL(ref(storage, path)) : '';
+          const url = path && storageInstance ? await getDownloadURL(ref(storageInstance, path)) : '';
           return {
             id: docSnap.id,
             name: data.name ?? path.split('/').pop() ?? 'Arquivo',
@@ -118,7 +120,9 @@ export function AdminDashboard() {
   };
 
   const handleDelete = async (docId: string, name?: string | null) => {
-    if (!db) return;
+    const dbInstance = db;
+    const storageInstance = storage;
+    if (!dbInstance) return;
 
     const confirmation = name
       ? `Deseja excluir o cadastro de ${name}?`
@@ -131,16 +135,16 @@ export function AdminDashboard() {
     let fileDeleteFailed = false;
 
     try {
-      const filesQuery = query(collection(db, 'registrations', docId, 'files'));
+      const filesQuery = query(collection(dbInstance, 'registrations', docId, 'files'));
       const snapshot = await getDocs(filesQuery);
 
-      if (storage) {
+      if (storageInstance) {
         await Promise.all(
           snapshot.docs.map(async (docSnap) => {
             const data = docSnap.data() as { path?: string };
             if (!data.path) return;
             try {
-              await deleteObject(ref(storage, data.path));
+              await deleteObject(ref(storageInstance, data.path));
             } catch {
               fileDeleteFailed = true;
             }
@@ -151,14 +155,14 @@ export function AdminDashboard() {
       await Promise.all(
         snapshot.docs.map(async (docSnap) => {
           try {
-            await deleteDoc(doc(db, 'registrations', docId, 'files', docSnap.id));
+            await deleteDoc(doc(dbInstance, 'registrations', docId, 'files', docSnap.id));
           } catch {
             fileDeleteFailed = true;
           }
         }),
       );
 
-      await deleteDoc(doc(db, 'registrations', docId));
+      await deleteDoc(doc(dbInstance, 'registrations', docId));
 
       setFilesById((prev) => {
         const next = { ...prev };
