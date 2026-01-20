@@ -21,7 +21,9 @@ const collectionName = 'registrations';
 
 const sanitizeFileName = (name: string) => name.replace(/\s+/g, '-').replace(/[^A-Za-z0-9._-]/g, '');
 
-const buildPayload = (values: FormValues) => {
+export type RegistrationInput = FormValues;
+
+const buildPayload = (values: RegistrationInput) => {
   const payload: Record<string, unknown> = {};
 
   Object.entries(values).forEach(([key, value]) => {
@@ -44,34 +46,7 @@ const buildPayload = (values: FormValues) => {
   return payload;
 };
 
-const uploadDocuments = async (submissionId: string, values: FormValues) => {
-  if (!storage) return {};
-
-  const uploads: Record<string, { name: string; type: string; size: number; url: string; path: string }> = {};
-
-  for (const field of FILE_FIELDS) {
-    const file = values[field];
-    if (!(file instanceof File)) continue;
-
-    const fileName = sanitizeFileName(file.name) || `${field}-${Date.now()}`;
-    const path = `registrations/${submissionId}/${field}-${Date.now()}-${fileName}`;
-    const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-
-    uploads[field] = {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      url,
-      path,
-    };
-  }
-
-  return uploads;
-};
-
-export const submitRegistration = async (values: FormValues) => {
+export const createRegistration = async (values: RegistrationInput) => {
   if (!isFirebaseConfigured || !db) {
     throw new Error('firebase-not-configured');
   }
@@ -83,14 +58,56 @@ export const submitRegistration = async (values: FormValues) => {
     createdAt: serverTimestamp(),
   });
 
-  const documents = await uploadDocuments(docRef.id, values);
+  return docRef.id;
+};
 
-  if (Object.keys(documents).length > 0) {
-    await updateDoc(doc(db, collectionName, docRef.id), {
-      documents,
+export const uploadRegistrationFile = async (
+  submissionId: string,
+  field: keyof FormValues,
+  file: File,
+) => {
+  if (!storage) {
+    throw new Error('storage-not-configured');
+  }
+
+  const fileName = sanitizeFileName(file.name) || `${String(field)}-${Date.now()}`;
+  const path = `registrations/${submissionId}/${String(field)}-${Date.now()}-${fileName}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+
+  return {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    url,
+    path,
+  };
+};
+
+export const uploadRegistrationDocuments = async (submissionId: string, values: RegistrationInput) => {
+  if (!storage) return {};
+
+  const uploads: Record<string, { name: string; type: string; size: number; url: string; path: string }> = {};
+
+  for (const field of FILE_FIELDS) {
+    const file = values[field];
+    if (!(file instanceof File)) continue;
+    uploads[field] = await uploadRegistrationFile(submissionId, field, file);
+  }
+
+  if (Object.keys(uploads).length > 0 && db) {
+    await updateDoc(doc(db, collectionName, submissionId), {
+      documents: uploads,
       updatedAt: serverTimestamp(),
     });
   }
 
-  return docRef.id;
+  return uploads;
+};
+
+export const submitRegistration = async (values: RegistrationInput) => {
+  const docId = await createRegistration(values);
+  await uploadRegistrationDocuments(docId, values);
+  return docId;
 };

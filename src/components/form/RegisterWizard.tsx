@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { copy } from '../../content/copy';
-import { submitRegistration } from '../../lib/registrations';
+import { createRegistration, uploadRegistrationDocuments } from '../../lib/registrations';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -455,7 +455,8 @@ export function RegisterWizard() {
       if (!navigator.onLine) {
         throw new Error('offline');
       }
-      await submitRegistration(data);
+      const docId = await createRegistration(data);
+      await uploadRegistrationDocuments(docId, data);
       setStatus('success');
     } catch (error) {
       console.error(error);
