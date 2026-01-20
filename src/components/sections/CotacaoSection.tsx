@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { copy } from '../../content/copy';
 import { formatBRL, formatDateTime, formatDecimal, formatPercent, formatTime } from '../../lib/format';
@@ -28,6 +28,48 @@ function getPosition(value?: number | null, low?: number | null, high?: number |
   return clamp(((value - low) / (high - low)) * 100);
 }
 
+const forexTimezone = 'America/New_York';
+const forexCloseMinutes = 17 * 60;
+
+const forexWeekdayMap: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+function getForexTimeParts(date: Date) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: forexTimezone,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date);
+
+  const weekday = parts.find((part) => part.type === 'weekday')?.value ?? '';
+  const hour = Number(parts.find((part) => part.type === 'hour')?.value ?? '0');
+  const minute = Number(parts.find((part) => part.type === 'minute')?.value ?? '0');
+
+  return {
+    weekday: forexWeekdayMap[weekday] ?? -1,
+    minutes: hour * 60 + minute,
+  };
+}
+
+function isForexMarketOpen(date: Date) {
+  const { weekday, minutes } = getForexTimeParts(date);
+
+  if (weekday === 6) return false;
+  if (weekday === 0) return minutes >= forexCloseMinutes;
+  if (weekday === 5) return minutes < forexCloseMinutes;
+  if (weekday >= 1 && weekday <= 4) return true;
+  return true;
+}
+
 export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionProps) {
   const usdt = prices.USDT;
   const usdtMeta = copy.crypto.find((item) => item.symbol === 'USDT');
@@ -40,7 +82,19 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
   const bookMid = bookBid && bookAsk ? (bookBid + bookAsk) / 2 : usdt?.price ?? null;
   const dailyPosition = getPosition(usdt?.price, usdt?.low24h ?? null, usdt?.high24h ?? null);
   const yearPosition = getPosition(usdt?.price, range.low, range.high);
-  const now = useMemo(() => new Date(), [lastUpdated]);
+  const [now, setNow] = useState(() => new Date());
+  const isMarketOpen = useMemo(() => isForexMarketOpen(now), [now]);
+
+  useEffect(() => {
+    setNow(new Date());
+  }, [lastUpdated]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <Section id="cotacao" className="bg-white">
@@ -52,9 +106,16 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                 <h2 className="text-xl font-semibold text-foreground md:text-2xl">Cotação em Tempo Real</h2>
                 <p className="text-sm text-muted-foreground">USD/BRL • Valores sem spread</p>
               </div>
-              <Badge className="w-fit border-emerald-200 bg-emerald-50 text-emerald-700">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Mercado Aberto
+              <Badge
+                className={cn(
+                  'w-fit',
+                  isMarketOpen
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'border-amber-200 bg-amber-50 text-amber-700',
+                )}
+              >
+                <span className={cn('h-2 w-2 rounded-full', isMarketOpen ? 'bg-emerald-500' : 'bg-amber-500')} />
+                {isMarketOpen ? 'Mercado Aberto' : 'Mercado Fechado'}
               </Badge>
             </div>
 
