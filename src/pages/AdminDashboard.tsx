@@ -13,11 +13,24 @@ import { hasAdminAllowlist, isAdminEmail } from '../lib/admin';
 import { formatDateTime } from '../lib/format';
 import { auth, db, storage } from '../lib/firebase';
 import { useAuthState } from '../hooks/useAuthState';
-import { useRegistrations } from '../hooks/useRegistrations';
+import { useRegistrations, type RegistrationRecord } from '../hooks/useRegistrations';
 
 type AdminFile = { id: string; name: string; url: string; path: string; field?: string; size?: number };
 
 type FieldDefinition = { label: string; key: string };
+
+type DetailsContentProps = {
+  isCompany: boolean;
+  data: Record<string, unknown>;
+  pfMainFields: FieldDefinition[];
+  pfAddressFields: FieldDefinition[];
+  pjMainFields: FieldDefinition[];
+  pjAddressFields: FieldDefinition[];
+  pjAdminFields: FieldDefinition[];
+  fileStatus: 'idle' | 'loading' | 'error';
+  files: AdminFile[];
+  fileLabels: Record<string, string>;
+};
 
 const formatValue = (value: unknown) => {
   if (value === undefined || value === null || value === '') return '--';
@@ -186,6 +199,229 @@ export function AdminDashboard() {
     );
   };
 
+  const renderDetailsContent = ({
+    isCompany,
+    data,
+    pfMainFields,
+    pfAddressFields,
+    pjMainFields,
+    pjAddressFields,
+    pjAdminFields,
+    fileStatus,
+    files,
+    fileLabels,
+  }: DetailsContentProps) => (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Card className="border-border/60 p-4">
+        <h3 className="text-sm font-semibold text-foreground">
+          {isCompany ? copy.form.companySection : copy.form.pfSection}
+        </h3>
+        <div className="mt-3">
+          {(isCompany ? pjMainFields : pfMainFields).map((field) =>
+            renderField(field.label, data[field.key], field.key),
+          )}
+        </div>
+      </Card>
+
+      <Card className="border-border/60 p-4">
+        <h3 className="text-sm font-semibold text-foreground">
+          {isCompany ? copy.form.fiscalAddress : copy.form.addressSection}
+        </h3>
+        <div className="mt-3">
+          {(isCompany ? pjAddressFields : pfAddressFields).map((field) =>
+            renderField(field.label, data[field.key], field.key),
+          )}
+        </div>
+      </Card>
+
+      {isCompany ? (
+        <Card className="border-border/60 p-4">
+          <h3 className="text-sm font-semibold text-foreground">{copy.form.adminSection}</h3>
+          <div className="mt-3">
+            {pjAdminFields.map((field) => renderField(field.label, data[field.key], field.key))}
+          </div>
+        </Card>
+      ) : null}
+
+      <Card className="border-border/60 p-4">
+        <h3 className="text-sm font-semibold text-foreground">Documentos enviados</h3>
+        <div className="mt-3 space-y-3 text-sm">
+          {fileStatus === 'loading' ? <p className="text-muted-foreground">Carregando arquivos...</p> : null}
+          {fileStatus === 'error' ? (
+            <p className="text-rose-600">Não foi possível carregar os arquivos.</p>
+          ) : null}
+          {fileStatus === 'idle' && files.length === 0 ? (
+            <p className="text-muted-foreground">Nenhum arquivo encontrado.</p>
+          ) : null}
+          {files.length > 0 ? (
+            <ul className="space-y-2">
+              {files.map((file) => (
+                <li
+                  key={file.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2"
+                >
+                  <div className="flex flex-col text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {file.field ? fileLabels[file.field] ?? file.field : 'Documento'}
+                    </span>
+                    <span>{file.name}</span>
+                    {file.size ? <span>{(file.size / 1024 / 1024).toFixed(2)}MB</span> : null}
+                  </div>
+                  {file.url ? (
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-medium text-primary"
+                    >
+                      Abrir arquivo
+                    </a>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Indisponível</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </Card>
+    </div>
+  );
+
+  const getRecordContext = (record: RegistrationRecord) => {
+    const data = record.data as Record<string, unknown>;
+    const accountType = data.accountType as string | undefined;
+    const isCompany = accountType === 'PJ';
+    const name = (isCompany ? data.companyName : data.fullName) as string | undefined;
+    const doc = (isCompany ? data.cnpj : data.cpf) as string | undefined;
+    const email = (isCompany ? data.companyEmail : data.userEmail) as string | undefined;
+    const statusValue = record.status ?? 'confirmado';
+    const statusLabel =
+      statusValue === 'approved' || statusValue === 'aprovado'
+        ? 'Aprovado'
+        : statusValue === 'rejected' || statusValue === 'rejeitado'
+          ? 'Rejeitado'
+          : statusValue === 'confirmado'
+            ? 'Confirmado'
+            : 'Pendente';
+    const statusStyle =
+      statusLabel === 'Aprovado'
+        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        : statusLabel === 'Rejeitado'
+          ? 'border-rose-200 bg-rose-50 text-rose-700'
+          : statusLabel === 'Confirmado'
+            ? 'border-sky-200 bg-sky-50 text-sky-700'
+            : 'border-amber-200 bg-amber-50 text-amber-700';
+
+    const pfMainFields: FieldDefinition[] = [
+      { label: copy.form.fullName, key: 'fullName' },
+      { label: copy.form.cpf, key: 'cpf' },
+      { label: copy.form.birthDate, key: 'birthDate' },
+      { label: copy.form.rg, key: 'rg' },
+      { label: copy.form.cnh, key: 'cnh' },
+      { label: copy.form.foreigner, key: 'isForeigner' },
+      { label: copy.form.email, key: 'userEmail' },
+      { label: copy.form.phone, key: 'userPhone' },
+      { label: copy.form.pep, key: 'pepStatus' },
+      { label: copy.form.pepPosition, key: 'pepPosition' },
+      { label: 'Termos aceitos', key: 'acceptTerms' },
+    ];
+
+    const pfAddressFields: FieldDefinition[] =
+      data.isForeigner === true
+        ? [
+            { label: copy.form.foreignStreet, key: 'foreignStreet' },
+            { label: copy.form.foreignNumber, key: 'foreignNumber' },
+            { label: copy.form.foreignComplement, key: 'foreignComplement' },
+            { label: copy.form.foreignDistrict, key: 'foreignDistrict' },
+            { label: copy.form.foreignCity, key: 'foreignCity' },
+            { label: copy.form.foreignState, key: 'foreignState' },
+            { label: copy.form.foreignZip, key: 'foreignZipCode' },
+            { label: copy.form.foreignCountry, key: 'foreignCountry' },
+          ]
+        : [
+            { label: copy.form.cep, key: 'cep' },
+            { label: copy.form.street, key: 'street' },
+            { label: copy.form.number, key: 'number' },
+            { label: copy.form.complement, key: 'complement' },
+            { label: copy.form.district, key: 'district' },
+            { label: copy.form.city, key: 'city' },
+            { label: copy.form.state, key: 'state' },
+          ];
+
+    const pjMainFields: FieldDefinition[] = [
+      { label: copy.form.companyName, key: 'companyName' },
+      { label: copy.form.tradeName, key: 'tradeName' },
+      { label: copy.form.cnpj, key: 'cnpj' },
+      { label: copy.form.foundationDate, key: 'foundationDate' },
+      { label: copy.form.cnae, key: 'mainCNAE' },
+      { label: copy.form.companyEmail, key: 'companyEmail' },
+      { label: copy.form.companyPhone, key: 'companyPhone' },
+      { label: copy.form.legalNature, key: 'legalNature' },
+    ];
+
+    const pjAddressFields: FieldDefinition[] = [
+      { label: copy.form.cep, key: 'pjCep' },
+      { label: copy.form.street, key: 'pjStreet' },
+      { label: copy.form.number, key: 'pjNumber' },
+      { label: copy.form.complement, key: 'pjComplement' },
+      { label: copy.form.district, key: 'pjDistrict' },
+      { label: copy.form.city, key: 'pjCity' },
+      { label: copy.form.state, key: 'pjState' },
+    ];
+
+    const pjAdminFields: FieldDefinition[] = [
+      { label: copy.form.adminName, key: 'majorityAdminName' },
+      { label: copy.form.adminCpf, key: 'majorityAdminCpf' },
+      { label: copy.form.adminEmail, key: 'majorityAdminEmail' },
+      { label: copy.form.adminPhone, key: 'majorityAdminPhone' },
+      { label: 'Termos aceitos', key: 'acceptTerms' },
+    ];
+
+    const files = filesById[record.id] ?? [];
+    const fileStatus = filesStatus[record.id] ?? 'idle';
+    const isExpanded = expandedId === record.id;
+    const isDeleting = Boolean(deletingIds[record.id]);
+    const fileLabels: Record<string, string> = {
+      documentFront: copy.form.docFront,
+      documentBack: copy.form.docBack,
+      selfie: copy.form.selfie,
+      proofOfAddress: copy.form.proofOfAddress,
+      articlesOfAssociation: copy.form.articles,
+      cnpjCard: copy.form.cnpjCard,
+      adminIdFront: copy.form.adminIdFront,
+      adminIdBack: copy.form.adminIdBack,
+      companyProofOfAddress: copy.form.companyProof,
+      ecnpjCertificate: copy.form.ecnpj,
+    };
+
+    const detailsProps: DetailsContentProps = {
+      isCompany,
+      data,
+      pfMainFields,
+      pfAddressFields,
+      pjMainFields,
+      pjAddressFields,
+      pjAdminFields,
+      fileStatus,
+      files,
+      fileLabels,
+    };
+
+    return {
+      data,
+      accountType,
+      name,
+      doc,
+      email,
+      statusLabel,
+      statusStyle,
+      isExpanded,
+      isDeleting,
+      detailsProps,
+    };
+  };
+
   if (!isFirebaseConfigured) {
     return (
       <div className="min-h-screen bg-background text-foreground">
@@ -276,13 +512,13 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <BrandLogo className="h-9" />
             <span className="sr-only">Nova Solidum Finances</span>
           </Link>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span>{user.email}</span>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span className="max-w-[220px] truncate sm:max-w-none">{user.email}</span>
             <Button variant="outline" size="sm" onClick={handleSignOut} disabled={isSigningOut}>
               {isSigningOut ? 'Saindo...' : 'Sair'}
             </Button>
@@ -324,7 +560,86 @@ export function AdminDashboard() {
           {deleteError ? (
             <div className="border-b border-border/60 px-6 py-3 text-xs text-rose-600">{deleteError}</div>
           ) : null}
-          <div className="overflow-x-auto">
+          <div className="space-y-4 px-4 pb-6 pt-4 lg:hidden">
+            {registrationsStatus === 'loading' ? (
+              <Card className="border-border/70 p-4 text-sm text-muted-foreground">
+                Carregando registros...
+              </Card>
+            ) : null}
+            {registrationsStatus === 'error' ? (
+              <Card className="border-border/70 p-4 text-sm text-rose-600">
+                Falha ao carregar registros.
+              </Card>
+            ) : null}
+            {registrationsStatus === 'idle' && records.length === 0 ? (
+              <Card className="border-border/70 p-4 text-sm text-muted-foreground">
+                Nenhum registro disponível no momento.
+              </Card>
+            ) : null}
+            {registrationsStatus === 'idle'
+              ? records.map((record) => {
+                  const {
+                    accountType,
+                    name,
+                    doc,
+                    email,
+                    statusLabel,
+                    statusStyle,
+                    isExpanded,
+                    isDeleting,
+                    detailsProps,
+                  } = getRecordContext(record);
+
+                  return (
+                    <Card key={record.id} className="border-border/70 p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">{name ?? '--'}</p>
+                          <p className="text-xs text-muted-foreground">Tipo: {accountType ?? '--'}</p>
+                        </div>
+                        <Badge className={statusStyle}>{statusLabel}</Badge>
+                      </div>
+                      <div className="mt-3 grid gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center justify-between gap-3">
+                          <span>Documento</span>
+                          <span className="font-medium text-foreground">{doc ?? '--'}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <span>Email</span>
+                          <span className="font-medium text-foreground">{email ?? '--'}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <span>Data</span>
+                          <span className="font-medium text-foreground">{formatDateTime(record.createdAt)}</span>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => toggleExpanded(record.id)}
+                        >
+                          {isExpanded ? 'Fechar detalhes' : 'Ver detalhes'}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                          onClick={() => handleDelete(record.id, name)}
+                          disabled={isDeleting}
+                        >
+                          {isDeleting ? 'Excluindo...' : 'Excluir'}
+                        </Button>
+                      </div>
+                      {isExpanded ? <div className="mt-4">{renderDetailsContent(detailsProps)}</div> : null}
+                    </Card>
+                  );
+                })
+              : null}
+          </div>
+          <div className="hidden overflow-x-auto lg:block">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
                 <tr>
@@ -360,119 +675,16 @@ export function AdminDashboard() {
                 ) : null}
                 {registrationsStatus === 'idle'
                   ? records.map((record) => {
-                      const data = record.data as Record<string, unknown>;
-                      const accountType = data.accountType as string | undefined;
-                      const isCompany = accountType === 'PJ';
-                      const name = isCompany ? data.companyName : data.fullName;
-                      const doc = isCompany ? data.cnpj : data.cpf;
-                      const email = isCompany ? data.companyEmail : data.userEmail;
-                      const statusValue = record.status ?? 'confirmado';
-                      const statusLabel =
-                        statusValue === 'approved' || statusValue === 'aprovado'
-                          ? 'Aprovado'
-                          : statusValue === 'rejected' || statusValue === 'rejeitado'
-                            ? 'Rejeitado'
-                            : statusValue === 'confirmado'
-                              ? 'Confirmado'
-                              : 'Pendente';
-                      const statusStyle =
-                        statusLabel === 'Aprovado'
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                          : statusLabel === 'Rejeitado'
-                            ? 'border-rose-200 bg-rose-50 text-rose-700'
-                            : statusLabel === 'Confirmado'
-                              ? 'border-sky-200 bg-sky-50 text-sky-700'
-                              : 'border-amber-200 bg-amber-50 text-amber-700';
-
-                      const pfMainFields: FieldDefinition[] = [
-                        { label: copy.form.fullName, key: 'fullName' },
-                        { label: copy.form.cpf, key: 'cpf' },
-                        { label: copy.form.birthDate, key: 'birthDate' },
-                        { label: copy.form.rg, key: 'rg' },
-                        { label: copy.form.cnh, key: 'cnh' },
-                        { label: copy.form.foreigner, key: 'isForeigner' },
-                        { label: copy.form.email, key: 'userEmail' },
-                        { label: copy.form.phone, key: 'userPhone' },
-                        { label: copy.form.pep, key: 'pepStatus' },
-                        { label: copy.form.pepPosition, key: 'pepPosition' },
-                        { label: 'Termos aceitos', key: 'acceptTerms' },
-                      ];
-
-                      const pfAddressFields: FieldDefinition[] =
-                        data.isForeigner === true
-                          ? [
-                              { label: copy.form.foreignStreet, key: 'foreignStreet' },
-                              { label: copy.form.foreignNumber, key: 'foreignNumber' },
-                              { label: copy.form.foreignComplement, key: 'foreignComplement' },
-                              { label: copy.form.foreignDistrict, key: 'foreignDistrict' },
-                              { label: copy.form.foreignCity, key: 'foreignCity' },
-                              { label: copy.form.foreignState, key: 'foreignState' },
-                              { label: copy.form.foreignZip, key: 'foreignZipCode' },
-                              { label: copy.form.foreignCountry, key: 'foreignCountry' },
-                            ]
-                          : [
-                              { label: copy.form.cep, key: 'cep' },
-                              { label: copy.form.street, key: 'street' },
-                              { label: copy.form.number, key: 'number' },
-                              { label: copy.form.complement, key: 'complement' },
-                              { label: copy.form.district, key: 'district' },
-                              { label: copy.form.city, key: 'city' },
-                              { label: copy.form.state, key: 'state' },
-                            ];
-
-                      const pjMainFields: FieldDefinition[] = [
-                        { label: copy.form.companyName, key: 'companyName' },
-                        { label: copy.form.tradeName, key: 'tradeName' },
-                        { label: copy.form.cnpj, key: 'cnpj' },
-                        { label: copy.form.foundationDate, key: 'foundationDate' },
-                        { label: copy.form.cnae, key: 'mainCNAE' },
-                        { label: copy.form.companyEmail, key: 'companyEmail' },
-                        { label: copy.form.companyPhone, key: 'companyPhone' },
-                        { label: copy.form.legalNature, key: 'legalNature' },
-                      ];
-
-                      const pjAddressFields: FieldDefinition[] = [
-                        { label: copy.form.cep, key: 'pjCep' },
-                        { label: copy.form.street, key: 'pjStreet' },
-                        { label: copy.form.number, key: 'pjNumber' },
-                        { label: copy.form.complement, key: 'pjComplement' },
-                        { label: copy.form.district, key: 'pjDistrict' },
-                        { label: copy.form.city, key: 'pjCity' },
-                        { label: copy.form.state, key: 'pjState' },
-                      ];
-
-                      const pjAdminFields: FieldDefinition[] = [
-                        { label: copy.form.adminName, key: 'majorityAdminName' },
-                        { label: copy.form.adminCpf, key: 'majorityAdminCpf' },
-                        { label: copy.form.adminEmail, key: 'majorityAdminEmail' },
-                        { label: copy.form.adminPhone, key: 'majorityAdminPhone' },
-                        { label: 'Termos aceitos', key: 'acceptTerms' },
-                      ];
-
-                      const files = filesById[record.id] ?? [];
-                      const fileStatus = filesStatus[record.id] ?? 'idle';
-                      const isExpanded = expandedId === record.id;
-                      const isDeleting = Boolean(deletingIds[record.id]);
-                      const fileLabels: Record<string, string> = {
-                        documentFront: copy.form.docFront,
-                        documentBack: copy.form.docBack,
-                        selfie: copy.form.selfie,
-                        proofOfAddress: copy.form.proofOfAddress,
-                        articlesOfAssociation: copy.form.articles,
-                        cnpjCard: copy.form.cnpjCard,
-                        adminIdFront: copy.form.adminIdFront,
-                        adminIdBack: copy.form.adminIdBack,
-                        companyProofOfAddress: copy.form.companyProof,
-                        ecnpjCertificate: copy.form.ecnpj,
-                      };
+                      const { accountType, name, doc, email, statusLabel, statusStyle, isExpanded, isDeleting, detailsProps } =
+                        getRecordContext(record);
 
                       return (
                         <Fragment key={record.id}>
                           <tr className="border-t border-border/60 align-top">
-                            <td className="px-6 py-4 text-sm text-foreground">{(name as string) ?? '--'}</td>
+                            <td className="px-6 py-4 text-sm text-foreground">{name ?? '--'}</td>
                             <td className="px-6 py-4 text-sm text-muted-foreground">{accountType ?? '--'}</td>
-                            <td className="px-6 py-4 text-sm text-muted-foreground">{(doc as string) ?? '--'}</td>
-                            <td className="px-6 py-4 text-sm text-muted-foreground">{(email as string) ?? '--'}</td>
+                            <td className="px-6 py-4 text-sm text-muted-foreground">{doc ?? '--'}</td>
+                            <td className="px-6 py-4 text-sm text-muted-foreground">{email ?? '--'}</td>
                             <td className="px-6 py-4 text-sm text-muted-foreground">
                               <Badge className={statusStyle}>{statusLabel}</Badge>
                             </td>
@@ -492,7 +704,7 @@ export function AdminDashboard() {
                                   size="sm"
                                   variant="outline"
                                   className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-                                  onClick={() => handleDelete(record.id, (name as string) ?? null)}
+                                  onClick={() => handleDelete(record.id, name ?? null)}
                                   disabled={isDeleting}
                                 >
                                   {isDeleting ? 'Excluindo...' : 'Excluir'}
@@ -503,89 +715,7 @@ export function AdminDashboard() {
                           {isExpanded ? (
                             <tr className="border-t border-border/60">
                               <td className="px-6 pb-6 pt-4" colSpan={6}>
-                                <div className="grid gap-4 lg:grid-cols-2">
-                                  <Card className="border-border/60 p-4">
-                                    <h3 className="text-sm font-semibold text-foreground">
-                                      {isCompany ? copy.form.companySection : copy.form.pfSection}
-                                    </h3>
-                                    <div className="mt-3">
-                                      {(isCompany ? pjMainFields : pfMainFields).map((field) =>
-                                        renderField(field.label, data[field.key], field.key),
-                                      )}
-                                    </div>
-                                  </Card>
-
-                                  <Card className="border-border/60 p-4">
-                                    <h3 className="text-sm font-semibold text-foreground">
-                                      {isCompany ? copy.form.fiscalAddress : copy.form.addressSection}
-                                    </h3>
-                                    <div className="mt-3">
-                                      {(isCompany ? pjAddressFields : pfAddressFields).map((field) =>
-                                        renderField(field.label, data[field.key], field.key),
-                                      )}
-                                    </div>
-                                  </Card>
-
-                                  {isCompany ? (
-                                    <Card className="border-border/60 p-4">
-                                      <h3 className="text-sm font-semibold text-foreground">
-                                        {copy.form.adminSection}
-                                      </h3>
-                                      <div className="mt-3">
-                                        {pjAdminFields.map((field) =>
-                                          renderField(field.label, data[field.key], field.key),
-                                        )}
-                                      </div>
-                                    </Card>
-                                  ) : null}
-
-                                  <Card className="border-border/60 p-4">
-                                    <h3 className="text-sm font-semibold text-foreground">Documentos enviados</h3>
-                                    <div className="mt-3 space-y-3 text-sm">
-                                      {fileStatus === 'loading' ? (
-                                        <p className="text-muted-foreground">Carregando arquivos...</p>
-                                      ) : null}
-                                      {fileStatus === 'error' ? (
-                                        <p className="text-rose-600">Não foi possível carregar os arquivos.</p>
-                                      ) : null}
-                                      {fileStatus === 'idle' && files.length === 0 ? (
-                                        <p className="text-muted-foreground">Nenhum arquivo encontrado.</p>
-                                      ) : null}
-                                      {files.length > 0 ? (
-                                        <ul className="space-y-2">
-                                          {files.map((file) => (
-                                            <li
-                                              key={file.id}
-                                              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2"
-                                            >
-                                              <div className="flex flex-col text-xs text-muted-foreground">
-                                                <span className="font-medium text-foreground">
-                                                  {file.field ? fileLabels[file.field] ?? file.field : 'Documento'}
-                                                </span>
-                                                <span>{file.name}</span>
-                                                {file.size ? (
-                                                  <span>{(file.size / 1024 / 1024).toFixed(2)}MB</span>
-                                                ) : null}
-                                              </div>
-                                              {file.url ? (
-                                                <a
-                                                  href={file.url}
-                                                  target="_blank"
-                                                  rel="noreferrer"
-                                                  className="text-xs font-medium text-primary"
-                                                >
-                                                  Abrir arquivo
-                                                </a>
-                                              ) : (
-                                                <span className="text-xs text-muted-foreground">Indisponível</span>
-                                              )}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      ) : null}
-                                    </div>
-                                  </Card>
-                                </div>
+                                {renderDetailsContent(detailsProps)}
                               </td>
                             </tr>
                           ) : null}
