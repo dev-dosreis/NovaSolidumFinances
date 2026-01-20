@@ -50,7 +50,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
             <div className="flex flex-col gap-4 border-b border-border/60 p-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-foreground md:text-2xl">Cotação em Tempo Real</h2>
-                <p className="text-sm text-muted-foreground">USDT/BRL • Valores sem spread</p>
+                <p className="text-sm text-muted-foreground">USD/BRL • Valores sem spread</p>
               </div>
               <Badge className="w-fit border-emerald-200 bg-emerald-50 text-emerald-700">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -120,10 +120,10 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/70 text-xs font-semibold">
                           FX
                         </div>
-                        USDTBRL
+                        USDBRL
                       </div>
                       <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                        Tether / Real brasileiro
+                        Dólar americano / Real brasileiro
                       </p>
                       <div className="flex items-baseline gap-3">
                         <span className="text-2xl font-semibold text-foreground">
@@ -157,7 +157,7 @@ export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionPr
                             <path d="M8 15h6" />
                           </svg>
                         </span>
-                        USDT - Livro de Ofertas
+                        USD - Livro de Ofertas
                       </div>
                       <span className="text-xs text-muted-foreground">?</span>
                     </div>
