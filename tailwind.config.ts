@@ -38,8 +38,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Sora', 'ui-sans-serif', 'system-ui'],
-        display: ['Cinzel', 'ui-serif', 'Georgia'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        display: ['Playfair Display', 'ui-serif', 'Georgia'],
       },
       boxShadow: {
         soft: '0 6px 24px rgba(15, 23, 42, 0.08)',
