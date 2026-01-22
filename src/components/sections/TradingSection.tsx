@@ -6,21 +6,27 @@ import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
 const icons = [
-  <svg key="bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" />
+  // Transações Instantâneas - Lightning bolt
+  <svg key="bolt" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
   </svg>,
-  <svg key="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <rect x="3" y="11" width="18" height="11" rx="2" />
-    <path d="M7 11V7C7 4.79086 8.79086 3 11 3H13C15.2091 3 17 4.79086 17 7V11" />
-    <circle cx="12" cy="16.5" r="1.5" fill="currentColor" />
+  // Máxima Segurança - Shield with lock
+  <svg key="security" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <rect x="9" y="10" width="6" height="5" rx="1" />
+    <path d="M10 10V8a2 2 0 0 1 4 0v2" />
   </svg>,
-  <svg key="trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M12 2V22" />
-    <path d="M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6" />
+  // Melhores Taxas - Trending down (baixas taxas)
+  <svg key="rates" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 7l6 6 4-4 8 8" />
+    <path d="M21 15v6h-6" />
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
   </svg>,
-  <svg key="clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 8V12L15 14" strokeLinecap="round" />
+  // Múltiplas Criptos - Multiple coins
+  <svg key="crypto" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="9" cy="9" r="7" />
+    <circle cx="15" cy="15" r="7" />
+    <path d="M9 6v6M6 9h6M15 12v6M12 15h6" />
   </svg>,
 ];
 

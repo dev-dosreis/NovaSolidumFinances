@@ -5,27 +5,27 @@ import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
 const icons = [
-  // Ponte Completa - Bridge/Connection icon
-  <svg key="bridge" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M3 12h2m14 0h2M7 12a2 2 0 012-2h6a2 2 0 012 2m-10 0v7a1 1 0 001 1h8a1 1 0 001-1v-7M5 8h14" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="9" cy="5" r="1.5" fill="currentColor" />
-    <circle cx="15" cy="5" r="1.5" fill="currentColor" />
+  // Ponte Completa - Connection/Link icon
+  <svg key="bridge" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
   </svg>,
-  // Experiência Simples - Sparkle/Magic icon
-  <svg key="simple" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364 6.364l-2.121-2.121M7.757 7.757L5.636 5.636m12.728 0l-2.121 2.121M7.757 16.243l-2.121 2.121" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
+  // Experiência Simples - Zap/Simple icon
+  <svg key="simple" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="m15 9-6 6" />
+    <path d="m9 9 6 6" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
   </svg>,
-  // Segurança Total - Shield with check icon
-  <svg key="security" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+  // Segurança Total - Shield with check
+  <svg key="security" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <path d="m9 12 2 2 4-4" />
   </svg>,
-  // Evolução Constante - Trending up/Growth icon
-  <svg key="evolution" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <path d="M3 17l6-6 4 4 8-8" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M14 7h7v7" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+  // Evolução Constante - Trending up
+  <svg key="evolution" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m22 7-8.5 8.5-5-5L2 17" />
+    <path d="M16 7h6v6" />
   </svg>,
 ];
 
