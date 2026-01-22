@@ -1,4 +1,4 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { Container } from '../layout/Container';
 import { Section } from '../layout/Section';
 import { Card } from '../ui/card';
@@ -6,6 +6,8 @@ import { MotionInView } from '../shared/MotionInView';
 import { RegisterWizard } from '../form/RegisterWizard';
 
 export function RegisterSection() {
+  const copy = useContent();
+
   return (
     <Section id="registro" className="bg-white">
       <Container className="space-y-10">

@@ -1,0 +1,148 @@
+{
+  "brand": "Nova Solidum Finances",
+  "nav": {
+    "home": "Inicio",
+    "trade": "Negociar",
+    "quote": "Cotización",
+    "about": "Sobre Nosotros",
+    "start": "Comenzar",
+    "login": "Acceder"
+  },
+  "hero": {
+    "title": "Nova Solidum",
+    "subtitle": "Somos el puente entre lo real y lo digital. Transformando activos digitales en soluciones reales para tu día a día."
+  },
+  "liveTicker": {
+    "pair": "USD/BRL",
+    "status": "En Vivo",
+    "bullet": "•"
+  },
+  "trading": {
+    "title": "Negocia Cripto en Segundos",
+    "description": "Compra, vende e intercambia criptoactivos de forma simple y segura. Opera vía PIX",
+    "ctaTitle": "Comienza a Negociar",
+    "ctaDescription": "Completa el registro o crea una cuenta para comprar y vender activos digitales (criptoactivos).",
+    "ctaButton": "Entrar / Registrarse",
+    "features": [
+      {
+        "title": "Transacciones Instantáneas",
+        "description": "Transacciones seguras. Compra y vende cripto de manera segura sin depender de interfaces complejas y procedimientos burocráticos."
+      },
+      {
+        "title": "Máxima Seguridad",
+        "description": "Seguridad de nivel bancario con compliance total. Tus activos protegidos 24/7."
+      },
+      {
+        "title": "Mejores Tarifas",
+        "description": "Las mejores tarifas del mercado. Transparencia total en cada transacción."
+      },
+      {
+        "title": "Múltiples Criptos",
+        "description": "Variedad de activos digitales. Diversifica tus operaciones de manera facilitada e intuitiva."
+      }
+    ]
+  },
+  "about": {
+    "title": "Quiénes Somos",
+    "quote": "\"Somos el puente entre lo real y lo digital.\"",
+    "text": "En Nova Solidum Finances, creemos que el futuro de las finanzas debe ser simple, accesible y conectado. No se trata de elegir entre el mundo tradicional o el digital, sino de construir un puente entre ambos. Creamos el mejor y más seguro ecosistema cripto para que cualquier persona pueda comprar, usar y vivir el cripto de forma práctica y confiable. Nuestro compromiso es transformar activos digitales en soluciones reales, acercando la tecnología a la vida cotidiana de personas y empresas.",
+    "highlight": "\"El mejor y más seguro enlace entre lo real y lo digital.\"",
+    "mission": {
+      "title": "Misión",
+      "description": "Conectar personas, empresas y comunidades al universo de las criptomonedas, ofreciendo soluciones seguras y accesibles que simplifican el uso de las finanzas digitales en el día a día."
+    },
+    "vision": {
+      "title": "Visión",
+      "description": "Hasta 2030, ser la principal referencia en Brasil y América Latina en integración entre economía tradicional y digital, consolidando Nova Solidum como el mejor y más seguro ecosistema cripto."
+    },
+    "values": {
+      "title": "Valores",
+      "list": [
+        "Accesibilidad – democratizar el uso de cripto",
+        "Innovación – tecnología como motor",
+        "Seguridad – confianza en cada transacción",
+        "Transparencia – actuación ética",
+        "Libertad – empoderar decisiones",
+        "Impacto Positivo – generar inclusión"
+      ]
+    },
+    "history": {
+      "title": "Nuestra Historia",
+      "text": "Nova Solidum nació para resolver un problema real: la barrera de entrada al mercado cripto. Mientras muchos se perdían en plataformas complejas, creamos una experiencia simple, segura e intuitiva. Desde compras rápidas con PIX hasta la posibilidad de que comerciantes acepten criptomonedas, Nova Solidum surgió para empoderar personas y empresas y conectar lo real con lo digital.",
+      "quote": "\"Democratizando el acceso a las finanzas digitales.\""
+    },
+    "whatWeDo": {
+      "title": "Qué Hacemos",
+      "quote": "\"Conectando personas, empresas y comunidades al futuro financiero.\"",
+      "pfTitle": "Para Personas Físicas",
+      "pfList": [
+        "Compra y venta rápida de USDT con liquidación en reales (PIX) y tarifas extremadamente competitivas.",
+        "Transacciones seguras y transparentes, con rastreabilidad total y soporte en tiempo real.",
+        "Conversión facilitada entre moneda fiduciaria y cripto, sin necesidad de conocimiento técnico avanzado.",
+        "Protección contra devaluación cambiaria e inflación, al mantener parte del patrimonio en activo vinculado al dólar.",
+        "Acceso simplificado al ecosistema cripto, con atención humanizada y proceso de verificación ágil."
+      ],
+      "pjTitle": "Para Empresas y Comerciantes",
+      "pjList": [
+        "Liquidación eficiente de operaciones en USDT, permitiendo recibir o efectuar pagos de forma global e instantánea.",
+        "Conversión automatizada a reales (BRL), con spread reducido y alta liquidez.",
+        "Solución segura y compatible con las normas brasileñas, en conformidad con el Marco Legal de los Criptoactivos (Ley 14.478/2022).",
+        "Atención corporativa personalizada, con soporte técnico y jurídico especializado.",
+        "Integración futura con gateway de pago permitiendo automatizar flujos financieros entre clientes y proveedores."
+      ]
+    },
+    "ecosystem": {
+      "title": "Ecosistema en Expansión",
+      "quote": "\"El futuro es híbrido, transparente y descentralizado.\"",
+      "text": "Nova Solidum Finances no es solo una empresa más con soluciones para el mercado Web3. Es una plataforma de intermediación de operaciones con criptoactivos que combina tecnología, conformidad regulatoria y eficiencia operacional para entregar una experiencia segura, accesible y económicamente ventajosa a sus usuarios. Con tarifas extremadamente competitivas e infraestructura proyectada según los más altos estándares internacionales de compliance, seguridad y rastreabilidad, Nova Solidum actúa con total transparencia y alineamiento a las directrices del Banco Central de Brasil y la Ley nº 14.478/2022 (Marco Legal de los Criptoactivos). Más que intermediar transacciones, la empresa construye confianza en cada operación, creando un ambiente donde usuarios, comerciantes e inversores puedan transaccionar con autonomía, liquidez y respaldo institucional. Su compromiso es ser referencia en solidez, innovación y adherencia regulatoria, consolidándose como un hub financiero digital preparado para el futuro de la economía descentralizada",
+      "items": [
+        {
+          "title": "Usuarios",
+          "description": "Acceso simple a un activo de liquidez 24/7, posibilidad de utilización de cripto para satisfacción de intereses personales y desburocratización del procedimiento de intercambio entre moneda fiduciaria y criptoactivos."
+        },
+        {
+          "title": "Comerciantes",
+          "description": "Mayor posibilidad de ingresos, una vez facilitada la atención de un público web3, además de la diversificación de reservas ante la inflación."
+        },
+        {
+          "title": "Inversores",
+          "description": "Alternativa desburocratizada para entrar y salir de sus operaciones, obteniendo liquidez de manera menos burocrática."
+        }
+      ]
+    },
+    "differentiators": {
+      "title": "Nuestros Diferenciales",
+      "quote": "\"Nova Solidum: la forma fácil de vivir el universo cripto.\"",
+      "items": [
+        {
+          "title": "Puente Completo",
+          "description": "Mejoramiento de las mejores prácticas adoptadas"
+        },
+        {
+          "title": "Experiencia Simple",
+          "description": "Revisión periódica de los sistemas de compliance"
+        },
+        {
+          "title": "Seguridad Total",
+          "description": "Capacitación continua del personal"
+        },
+        {
+          "title": "Evolución Constante",
+          "description": "Adecuación regulatoria y legal a las tendencias regulatorias"
+        }
+      ]
+    }
+  },
+  "finalCta": {
+    "title": "Únete a Nova Solidum Finances.",
+    "button": "Comenzar"
+  },
+  "footer": {
+    "rights": "© 2025 Nova Solidum Finances LTDA. Todos los derechos reservados",
+    "terms": "Términos de Uso",
+    "compliance": "Políticas de Compliance",
+    "support": "Soporte",
+    "disclaimer": "\"Aviso Legal - Nova Solidum Finances es un Proveedor de Servicios de Activos Virtuales (PSAV), constituido en territorio brasileño, inscrito en el CNPJ bajo el nº 63.010.454/0001-63, con la finalidad de prestar servicios de intermediación en operaciones con activos virtuales — comprendiendo compra y/o venta de criptoactivos. La empresa está clasificada como intermediaria, según la Consulta Pública nº 109/2024 del Banco Central de Brasil. La licencia ante el Banco Central será solicitada tan pronto como el regulador inicie la fase de adecuación legal, etapa que, hasta el momento, aún no ha sido formalmente implementada. No hay necesidad de registro ante la CVM, ya que no se trata de operaciones/servicios con valores mobiliarios\".",
+    "credit": "Desarrollado por Lucas Dos Reis"
+  }
+}

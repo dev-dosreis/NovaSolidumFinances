@@ -1,8 +1,10 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { BrandLogo } from '../shared/BrandLogo';
 import { Container } from './Container';
 
 export function Footer() {
+  const copy = useContent();
+
   return (
     <footer className="border-t border-border/70 bg-white">
       <Container className="space-y-10 py-12">

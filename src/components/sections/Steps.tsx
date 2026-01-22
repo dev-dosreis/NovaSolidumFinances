@@ -1,12 +1,13 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { Card } from '../ui/card';
 import { Container } from '../layout/Container';
 import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
-const steps = copy.trading.features.slice(0, 3);
-
 export function Steps() {
+  const copy = useContent();
+  const steps = copy.trading.features.slice(0, 3);
+
   return (
     <Section>
       <Container className="space-y-10">

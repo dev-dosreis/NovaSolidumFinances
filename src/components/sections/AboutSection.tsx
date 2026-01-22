@@ -1,10 +1,12 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { Card } from '../ui/card';
 import { Container } from '../layout/Container';
 import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
 export function AboutSection() {
+  const copy = useContent();
+
   return (
     <Section id="sobre">
       <Container className="space-y-12">

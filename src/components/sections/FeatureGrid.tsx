@@ -1,10 +1,12 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { InfoCard } from '../shared/InfoCard';
 import { Container } from '../layout/Container';
 import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
 export function FeatureGrid() {
+  const copy = useContent();
+
   return (
     <Section>
       <Container className="space-y-10">

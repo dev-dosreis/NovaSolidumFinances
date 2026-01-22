@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 
-import { copy } from '../../content/copy';
 import { formatBRL, formatPercent, formatTime } from '../../lib/format';
 import { cn } from '../../lib/utils';
 import { CryptoPrices, PriceStatus } from '../../hooks/useCryptoPrices';
 import type { PriceStatus as UsdPriceStatus } from '../../hooks/useUsdBrl';
+import { useContent } from '../../hooks/useContent';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -21,6 +21,7 @@ interface HeroProps {
 }
 
 export function Hero({ prices, status, lastUpdated, usdRate, usdStatus }: HeroProps) {
+  const copy = useContent();
   const usdt = prices.USDT;
   const usdPrice = usdRate?.price ?? usdt?.price ?? null;
   const usdUpdated = usdRate?.lastUpdated ?? lastUpdated;

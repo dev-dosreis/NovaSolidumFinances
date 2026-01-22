@@ -1,10 +1,12 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { Button } from '../ui/button';
 import { Container } from '../layout/Container';
 import { Section } from '../layout/Section';
 import { MotionInView } from '../shared/MotionInView';
 
 export function CTASection() {
+  const copy = useContent();
+
   return (
     <Section className="bg-white">
       <Container>

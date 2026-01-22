@@ -1,29 +1,31 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { copy } from '../../content/copy';
 import { cn } from '../../lib/utils';
 import { BrandLogo } from '../shared/BrandLogo';
+import { LanguageSelector } from '../shared/LanguageSelector';
 import { Button } from '../ui/button';
 import { Container } from './Container';
 
-const links = [
-  { label: copy.nav.home, href: '#inicio' },
-  { label: copy.nav.trade, href: '#negociar' },
-  { label: copy.nav.quote, href: '#cotacao' },
-  { label: copy.nav.about, href: '#sobre' },
-];
-
 export function Navbar() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+
+  const links = [
+    { label: t('nav.home'), href: '#inicio' },
+    { label: t('nav.trade'), href: '#negociar' },
+    { label: t('nav.quote'), href: '#cotacao' },
+    { label: t('nav.about'), href: '#sobre' },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur">
       <Container className="flex items-center justify-between py-4">
         <a href="#inicio" className="flex items-center gap-3">
           <BrandLogo className="h-9 sm:h-10" />
-          <span className="sr-only">{copy.brand}</span>
+          <span className="sr-only">{t('brand')}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground lg:flex">
           {links.map((link) => (
@@ -33,11 +35,12 @@ export function Navbar() {
           ))}
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
+          <LanguageSelector />
           <Button variant="outline" size="sm" asChild>
-            <Link to="/login">{copy.nav.login}</Link>
+            <Link to="/login">{t('nav.login')}</Link>
           </Button>
           <a href="#registro">
-            <Button size="sm">{copy.nav.start}</Button>
+            <Button size="sm">{t('nav.start')}</Button>
           </a>
         </div>
         <button
@@ -72,12 +75,15 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <div className="flex justify-center pt-2">
+                <LanguageSelector />
+              </div>
               <Button variant="outline" size="lg" asChild>
-                <Link to="/login">{copy.nav.login}</Link>
+                <Link to="/login">{t('nav.login')}</Link>
               </Button>
               <a href="#registro" onClick={() => setOpen(false)}>
                 <Button className="w-full" size="lg">
-                  {copy.nav.start}
+                  {t('nav.start')}
                 </Button>
               </a>
             </Container>

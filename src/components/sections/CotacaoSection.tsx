@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { formatBRL, formatDateTime, formatDecimal, formatPercent, formatTime } from '../../lib/format';
 import { cn } from '../../lib/utils';
 import { CryptoPrices, PriceStatus } from '../../hooks/useCryptoPrices';
@@ -112,6 +112,7 @@ function formatCountdown(minutes: number) {
 }
 
 export function CotacaoSection({ prices, status, lastUpdated }: CotacaoSectionProps) {
+  const copy = useContent();
   const usdt = prices.USDT;
   const usdtMeta = copy.crypto.find((item) => item.symbol === 'USDT');
   const { range } = useUsdtYearRange();

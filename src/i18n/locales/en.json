@@ -1,0 +1,148 @@
+{
+  "brand": "Nova Solidum Finances",
+  "nav": {
+    "home": "Home",
+    "trade": "Trade",
+    "quote": "Quote",
+    "about": "About",
+    "start": "Get Started",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Nova Solidum",
+    "subtitle": "We are the bridge between real and digital. Transforming digital assets into real solutions for your daily life."
+  },
+  "liveTicker": {
+    "pair": "USD/BRL",
+    "status": "Live",
+    "bullet": "•"
+  },
+  "trading": {
+    "title": "Trade Crypto in Seconds",
+    "description": "Buy, sell and exchange crypto assets simply and securely. Operate via PIX",
+    "ctaTitle": "Start Trading",
+    "ctaDescription": "Complete onboarding or create an account to buy and sell digital assets (crypto assets).",
+    "ctaButton": "Sign In / Sign Up",
+    "features": [
+      {
+        "title": "Instant Transactions",
+        "description": "Secure transactions. Buy and sell crypto safely without relying on complex interfaces and bureaucratic procedures."
+      },
+      {
+        "title": "Maximum Security",
+        "description": "Bank-level security with full compliance. Your assets protected 24/7."
+      },
+      {
+        "title": "Best Rates",
+        "description": "The best rates in the market. Total transparency in every transaction."
+      },
+      {
+        "title": "Multiple Cryptos",
+        "description": "Variety of digital assets. Diversify your operations in a facilitated and intuitive way."
+      }
+    ]
+  },
+  "about": {
+    "title": "Who We Are",
+    "quote": "\"We are the bridge between real and digital.\"",
+    "text": "At Nova Solidum Finances, we believe that the future of finance should be simple, accessible and connected. It's not about choosing between the traditional or digital world, but about building a bridge between the two. We created the best and most secure crypto ecosystem so that anyone can buy, use and live crypto in a practical and reliable way. Our commitment is to transform digital assets into real solutions, bringing technology closer to the daily lives of people and businesses.",
+    "highlight": "\"The best and most secure link between real and digital.\"",
+    "mission": {
+      "title": "Mission",
+      "description": "Connect people, businesses and communities to the cryptocurrency universe, offering secure and accessible solutions that simplify the use of digital finance in everyday life."
+    },
+    "vision": {
+      "title": "Vision",
+      "description": "By 2030, be the main reference in Brazil and Latin America in integration between traditional and digital economy, consolidating Nova Solidum as the best and most secure crypto ecosystem."
+    },
+    "values": {
+      "title": "Values",
+      "list": [
+        "Accessibility – democratize crypto usage",
+        "Innovation – technology as the engine",
+        "Security – trust in every transaction",
+        "Transparency – ethical operation",
+        "Freedom – empower choices",
+        "Positive Impact – generate inclusion"
+      ]
+    },
+    "history": {
+      "title": "Our History",
+      "text": "Nova Solidum was born to solve a real problem: the entry barrier to the crypto market. While many got lost in complex platforms, we created a simple, secure and intuitive experience. From quick purchases with PIX to the possibility of merchants accepting cryptocurrencies, Nova Solidum emerged to empower people and businesses and connect the real to the digital.",
+      "quote": "\"Democratizing access to digital finance.\""
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "quote": "\"Connecting people, businesses and communities to the financial future.\"",
+      "pfTitle": "For Individuals",
+      "pfList": [
+        "Fast purchase and sale of USDT with settlement in reais (PIX) and extremely competitive fees.",
+        "Secure and transparent transactions, with full traceability and real-time support.",
+        "Facilitated conversion between fiat currency and crypto, without the need for advanced technical knowledge.",
+        "Protection against currency devaluation and inflation, by keeping part of assets in dollar-pegged assets.",
+        "Simplified access to the crypto ecosystem, with humanized service and agile verification process."
+      ],
+      "pjTitle": "For Businesses and Merchants",
+      "pjList": [
+        "Efficient settlement of USDT operations, allowing global and instant receipt or payment.",
+        "Automated conversion to reais (BRL), with reduced spread and high liquidity.",
+        "Secure solution compatible with Brazilian regulations, in compliance with the Legal Framework for Crypto Assets (Law 14.478/2022).",
+        "Personalized corporate service, with specialized technical and legal support.",
+        "Future integration with payment gateway allowing automation of financial flows between customers and suppliers."
+      ]
+    },
+    "ecosystem": {
+      "title": "Expanding Ecosystem",
+      "quote": "\"The future is hybrid, transparent and decentralized.\"",
+      "text": "Nova Solidum Finances is not just another company with solutions for the Web3 market. It is a crypto asset operations intermediation platform that combines technology, regulatory compliance and operational efficiency to deliver a secure, accessible and economically advantageous experience to its users. With extremely competitive fees and infrastructure designed according to the highest international standards of compliance, security and traceability, Nova Solidum operates with full transparency and alignment with the guidelines of the Central Bank of Brazil and Law No. 14.478/2022 (Legal Framework for Crypto Assets). More than intermediating transactions, the company builds trust in each operation, creating an environment where users, merchants and investors can transact with autonomy, liquidity and institutional support. Its commitment is to be a reference in solidity, innovation and regulatory adherence, consolidating itself as a digital financial hub prepared for the future of the decentralized economy",
+      "items": [
+        {
+          "title": "Users",
+          "description": "Simple access to a 24/7 liquidity asset, possibility of using crypto to satisfy personal interests and debureaucratization of the exchange procedure between fiat currency and crypto assets."
+        },
+        {
+          "title": "Merchants",
+          "description": "Greater revenue possibility, once facilitating service to a web3 audience, in addition to reserve diversification against inflation."
+        },
+        {
+          "title": "Investors",
+          "description": "Debureaucratized alternative to enter and exit their operations, obtaining liquidity in a less bureaucratic way."
+        }
+      ]
+    },
+    "differentiators": {
+      "title": "Our Differentiators",
+      "quote": "\"Nova Solidum: the easy way to live the crypto universe.\"",
+      "items": [
+        {
+          "title": "Complete Bridge",
+          "description": "Improvement of best practices adopted"
+        },
+        {
+          "title": "Simple Experience",
+          "description": "Periodic review of compliance systems"
+        },
+        {
+          "title": "Total Security",
+          "description": "Continuous staff training"
+        },
+        {
+          "title": "Constant Evolution",
+          "description": "Regulatory and legal adequacy to regulatory trends"
+        }
+      ]
+    }
+  },
+  "finalCta": {
+    "title": "Join Nova Solidum Finances.",
+    "button": "Get Started"
+  },
+  "footer": {
+    "rights": "© 2025 Nova Solidum Finances LTDA. All rights reserved",
+    "terms": "Terms of Use",
+    "compliance": "Compliance Policies",
+    "support": "Support",
+    "disclaimer": "\"Disclaimer - Nova Solidum Finances is a Virtual Asset Service Provider (VASP), established in Brazilian territory, registered in CNPJ under number 63.010.454/0001-63, with the purpose of providing intermediation services in operations with virtual assets — comprising the purchase and/or sale of crypto assets. The company is classified as an intermediary, under the terms of Public Consultation No. 109/2024 of the Central Bank of Brazil. Licensing with the Central Bank will be requested as soon as the regulator begins the legal adequacy phase, a stage that, until the present moment, has not yet been formally implemented. There is no need for CVM registration, since it does not involve operations/services with securities\".",
+    "credit": "Developed by Lucas Dos Reis"
+  }
+}

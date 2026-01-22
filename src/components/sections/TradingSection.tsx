@@ -1,4 +1,4 @@
-import { copy } from '../../content/copy';
+import { useContent } from '../../hooks/useContent';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Container } from '../layout/Container';
@@ -25,6 +25,8 @@ const icons = [
 ];
 
 export function TradingSection() {
+  const copy = useContent();
+
   return (
     <Section id="negociar">
       <Container className="space-y-12">
