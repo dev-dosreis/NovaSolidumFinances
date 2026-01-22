@@ -1,0 +1,11 @@
+# Nova Solidum Finances - robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+# Sitemaps (when implemented)
+# Sitemap: https://novasolidum.com/sitemap.xml
+
+# Crawl-delay for better performance
+Crawl-delay: 1

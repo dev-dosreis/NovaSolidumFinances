@@ -43,16 +43,19 @@ export function Navbar() {
             <Button size="sm">{t('nav.start')}</Button>
           </a>
         </div>
-        <button
-          type="button"
-          aria-label="Abrir menu"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition hover:text-foreground lg:hidden"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          <span className="text-lg">≡</span>
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageSelector />
+          <button
+            type="button"
+            aria-label="Abrir menu"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition hover:text-foreground"
+            onClick={() => setOpen((prev) => !prev)}
+          >
+            <span className="text-lg">≡</span>
+          </button>
+        </div>
       </Container>
       <AnimatePresence>
         {open ? (
@@ -75,9 +78,6 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <div className="flex justify-center pt-2">
-                <LanguageSelector />
-              </div>
               <Button variant="outline" size="lg" asChild>
                 <Link to="/login">{t('nav.login')}</Link>
               </Button>

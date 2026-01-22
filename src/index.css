@@ -33,10 +33,16 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
   }
 
   h1,
@@ -44,6 +50,27 @@
   h3,
   h4 {
     @apply font-display;
+  }
+
+  /* Improved touch targets for mobile */
+  @media (max-width: 768px) {
+    button,
+    a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  /* Better focus visibility for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }
 

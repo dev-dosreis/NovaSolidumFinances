@@ -12,16 +12,36 @@ i18n
   .init({
     resources: {
       pt: { translation: pt },
+      'pt-BR': { translation: pt },
+      'pt-PT': { translation: pt },
       es: { translation: es },
+      'es-ES': { translation: es },
+      'es-MX': { translation: es },
+      'es-AR': { translation: es },
+      'es-CO': { translation: es },
+      'es-CL': { translation: es },
       en: { translation: en },
+      'en-US': { translation: en },
+      'en-GB': { translation: en },
+      'en-CA': { translation: en },
+      'en-AU': { translation: en },
     },
-    fallbackLng: 'pt',
+    fallbackLng: 'en',
+    supportedLngs: ['pt', 'pt-BR', 'pt-PT', 'es', 'es-ES', 'es-MX', 'es-AR', 'es-CO', 'es-CL', 'en', 'en-US', 'en-GB', 'en-CA', 'en-AU'],
+    load: 'languageOnly',
+    nonExplicitSupportedLngs: true,
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+      lookupLocalStorage: 'i18nextLng',
+      lookupFromPathIndex: 0,
       caches: ['localStorage'],
+      cookieMinutes: 10080,
+    },
+    react: {
+      useSuspense: false,
     },
   });
 
