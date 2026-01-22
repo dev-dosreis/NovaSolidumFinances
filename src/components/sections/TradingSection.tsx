@@ -10,23 +10,23 @@ const icons = [
   <svg key="bolt" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
   </svg>,
-  // Máxima Segurança - Shield with lock
+  // Máxima Segurança - Shield with check
   <svg key="security" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    <rect x="9" y="10" width="6" height="5" rx="1" />
-    <path d="M10 10V8a2 2 0 0 1 4 0v2" />
+    <path d="M9 12l2 2 4-4" />
   </svg>,
-  // Melhores Taxas - Trending down (baixas taxas)
+  // Melhores Taxas - Percent/discount icon
   <svg key="rates" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 7l6 6 4-4 8 8" />
-    <path d="M21 15v6h-6" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
+    <path d="M8 8l8 8" />
   </svg>,
-  // Múltiplas Criptos - Multiple coins
+  // Múltiplas Criptos - Layers icon
   <svg key="crypto" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="9" cy="9" r="7" />
-    <circle cx="15" cy="15" r="7" />
-    <path d="M9 6v6M6 9h6M15 12v6M12 15h6" />
+    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+    <path d="M2 17l10 5 10-5" />
+    <path d="M2 12l10 5 10-5" />
   </svg>,
 ];
 
