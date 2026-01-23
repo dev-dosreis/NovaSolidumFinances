@@ -15,3 +15,6 @@ coverage
 vite.config.d.ts
 vite.config.js
 dist
+
+# local SSL certificates
+.cert/

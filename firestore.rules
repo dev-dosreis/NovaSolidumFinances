@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
+
+    // Verifica se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Lista de emails de administradores autorizados
+    // IMPORTANTE: Mantenha sincronizado com VITE_ADMIN_EMAILS
+    function isAdmin() {
+      return isAuthenticated() &&
+             request.auth.token.email in [
+               'admin@novasolidum.com.br',
+               // Adicione mais emails aqui conforme necessário:
+               // 'outro-admin@novasolidum.com.br',
+               // 'admin2@example.com',
+             ];
+    }
+
+    // ==========================================
+    // REGISTRATIONS (Formulário de Onboarding)
+    // ==========================================
+
+    // Collection: registrations
+    match /registrations/{docId} {
+      // Permitir criação apenas se autenticado (para o formulário público)
+      allow create: if true; // Qualquer um pode criar (formulário público)
+
+      // Apenas admins podem ler, atualizar e deletar
+      allow read, update, delete: if isAdmin();
+
+      // Subcollection: files (documentos enviados)
+      match /files/{fileId} {
+        allow create: if true; // Qualquer um pode fazer upload (formulário público)
+        allow read, delete: if isAdmin();
+      }
+    }
+
+    // ==========================================
+    // CNPJ LOOKUP MODULE
+    // ==========================================
+
+    // Collection: cnpj_cache
+    match /cnpj_cache/{cnpj} {
+      // Apenas admins podem ler e escrever no cache
+      allow read, write: if isAdmin();
+    }
+
+    // Collection: cnpj_lookup_logs
+    match /cnpj_lookup_logs/{logId} {
+      // Apenas admins podem criar logs
+      allow create: if isAdmin();
+
+      // Admins podem ler seus próprios logs ou todos os logs
+      allow read: if isAdmin();
+
+      // Ninguém pode atualizar ou deletar logs (imutáveis para auditoria)
+      allow update, delete: if false;
+    }
+
+    // ==========================================
+    // DEFAULT: NEGAR TUDO O MAIS
+    // ==========================================
+
+    // Qualquer outra collection não especificada é bloqueada
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

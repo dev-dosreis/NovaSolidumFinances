@@ -32,7 +32,7 @@ export function Footer() {
             <span className="sr-only">{copy.brand}</span>
           </div>
           <a
-            href="https://wa.me/5511914998141"
+            href="https://portf-lio-dos-reis.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             className="text-foreground transition hover:text-primary"

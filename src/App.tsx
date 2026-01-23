@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import { LanguageManager } from './components/shared/LanguageManager';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { CnpjLookup } from './pages/CnpjLookup';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/cnpj" element={<CnpjLookup />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

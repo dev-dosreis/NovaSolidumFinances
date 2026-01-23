@@ -218,5 +218,72 @@
     "privacy": "Política de Privacidad",
     "cancel": "Cancelar",
     "submit": "Enviar"
+  },
+  "cnpj": {
+    "pageTitle": "Consulta CNPJ",
+    "pageDescription": "Consulte información de registro de empresas por CNPJ",
+    "backToDashboard": "Volver al Panel",
+    "form": {
+      "label": "CNPJ",
+      "placeholder": "00.000.000/0000-00",
+      "hint": "Digite o pegue el CNPJ que desea consultar",
+      "button": "Consultar CNPJ",
+      "searching": "Consultando..."
+    },
+    "result": {
+      "copyButton": "Copiar resumen",
+      "copied": "¡Copiado!",
+      "nomeFantasia": "Nombre Comercial",
+      "fields": {
+        "cnpj": "CNPJ",
+        "dataAbertura": "Fecha de Apertura",
+        "naturezaJuridica": "Naturaleza Jurídica",
+        "cnaePrincipal": "CNAE Principal",
+        "cnaesSecundarios": "CNAEs Secundarios",
+        "logradouro": "Calle",
+        "complemento": "Complemento",
+        "bairro": "Barrio",
+        "municipioUf": "Municipio/Estado",
+        "cep": "CEP",
+        "telefone": "Teléfono",
+        "email": "Email"
+      },
+      "sections": {
+        "endereco": "Dirección",
+        "contato": "Contacto"
+      },
+      "footer": {
+        "fonte": "Fuente",
+        "atualizadoEm": "Actualizado el"
+      },
+      "additionalCnaes": "+ {count} CNAEs adicionales"
+    },
+    "states": {
+      "loading": {
+        "title": "Consultando CNPJ...",
+        "description": "Buscando información en la base de datos"
+      },
+      "error": {
+        "title": "Error al consultar CNPJ",
+        "retry": "Intentar nuevamente"
+      },
+      "empty": {
+        "title": "Digite un CNPJ para consultar",
+        "description": "Use el formulario anterior para buscar información de registro"
+      },
+      "notFound": {
+        "title": "CNPJ no encontrado",
+        "description": "No se encontró información para este CNPJ en la base de datos"
+      }
+    },
+    "info": {
+      "title": "Información sobre la consulta",
+      "items": [
+        "Datos obtenidos de BrasilAPI (base oficial de la Receita Federal)",
+        "Los resultados se almacenan en caché durante 30 días",
+        "Todas las consultas se registran para auditoría",
+        "Tiempo de espera de 4 segundos por consulta"
+      ]
+    }
   }
 }

@@ -218,5 +218,72 @@
     "privacy": "Política de Privacidade",
     "cancel": "Cancelar",
     "submit": "Enviar"
+  },
+  "cnpj": {
+    "pageTitle": "Consulta CNPJ",
+    "pageDescription": "Consulte informações cadastrais de empresas por CNPJ",
+    "backToDashboard": "Voltar ao Dashboard",
+    "form": {
+      "label": "CNPJ",
+      "placeholder": "00.000.000/0000-00",
+      "hint": "Digite ou cole o CNPJ que deseja consultar",
+      "button": "Consultar CNPJ",
+      "searching": "Consultando..."
+    },
+    "result": {
+      "copyButton": "Copiar resumo",
+      "copied": "Copiado!",
+      "nomeFantasia": "Nome Fantasia",
+      "fields": {
+        "cnpj": "CNPJ",
+        "dataAbertura": "Data de Abertura",
+        "naturezaJuridica": "Natureza Jurídica",
+        "cnaePrincipal": "CNAE Principal",
+        "cnaesSecundarios": "CNAEs Secundários",
+        "logradouro": "Logradouro",
+        "complemento": "Complemento",
+        "bairro": "Bairro",
+        "municipioUf": "Município/UF",
+        "cep": "CEP",
+        "telefone": "Telefone",
+        "email": "Email"
+      },
+      "sections": {
+        "endereco": "Endereço",
+        "contato": "Contato"
+      },
+      "footer": {
+        "fonte": "Fonte",
+        "atualizadoEm": "Atualizado em"
+      },
+      "additionalCnaes": "+ {count} CNAEs adicionais"
+    },
+    "states": {
+      "loading": {
+        "title": "Consultando CNPJ...",
+        "description": "Buscando informações na base de dados"
+      },
+      "error": {
+        "title": "Erro ao consultar CNPJ",
+        "retry": "Tentar novamente"
+      },
+      "empty": {
+        "title": "Digite um CNPJ para consultar",
+        "description": "Use o formulário acima para buscar informações cadastrais"
+      },
+      "notFound": {
+        "title": "CNPJ não encontrado",
+        "description": "Não foram encontradas informações para este CNPJ na base de dados"
+      }
+    },
+    "info": {
+      "title": "Informações sobre a consulta",
+      "items": [
+        "Dados obtidos da BrasilAPI (base oficial da Receita Federal)",
+        "Resultados são armazenados em cache por 30 dias",
+        "Todas as consultas são registradas para auditoria",
+        "Timeout de 4 segundos por consulta"
+      ]
+    }
   }
 }

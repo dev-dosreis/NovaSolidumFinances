@@ -218,5 +218,72 @@
     "privacy": "Privacy Policy",
     "cancel": "Cancel",
     "submit": "Submit"
+  },
+  "cnpj": {
+    "pageTitle": "CNPJ Lookup",
+    "pageDescription": "Search company registration information by CNPJ",
+    "backToDashboard": "Back to Dashboard",
+    "form": {
+      "label": "CNPJ",
+      "placeholder": "00.000.000/0000-00",
+      "hint": "Type or paste the CNPJ you want to search",
+      "button": "Search CNPJ",
+      "searching": "Searching..."
+    },
+    "result": {
+      "copyButton": "Copy summary",
+      "copied": "Copied!",
+      "nomeFantasia": "Trade Name",
+      "fields": {
+        "cnpj": "CNPJ",
+        "dataAbertura": "Opening Date",
+        "naturezaJuridica": "Legal Nature",
+        "cnaePrincipal": "Main CNAE",
+        "cnaesSecundarios": "Secondary CNAEs",
+        "logradouro": "Street",
+        "complemento": "Complement",
+        "bairro": "District",
+        "municipioUf": "City/State",
+        "cep": "ZIP Code",
+        "telefone": "Phone",
+        "email": "Email"
+      },
+      "sections": {
+        "endereco": "Address",
+        "contato": "Contact"
+      },
+      "footer": {
+        "fonte": "Source",
+        "atualizadoEm": "Updated at"
+      },
+      "additionalCnaes": "+ {count} additional CNAEs"
+    },
+    "states": {
+      "loading": {
+        "title": "Searching CNPJ...",
+        "description": "Fetching information from database"
+      },
+      "error": {
+        "title": "Error searching CNPJ",
+        "retry": "Try again"
+      },
+      "empty": {
+        "title": "Enter a CNPJ to search",
+        "description": "Use the form above to search for registration information"
+      },
+      "notFound": {
+        "title": "CNPJ not found",
+        "description": "No information was found for this CNPJ in the database"
+      }
+    },
+    "info": {
+      "title": "Search information",
+      "items": [
+        "Data obtained from BrasilAPI (official Receita Federal database)",
+        "Results are cached for 30 days",
+        "All searches are logged for audit",
+        "4 seconds timeout per search"
+      ]
+    }
   }
 }

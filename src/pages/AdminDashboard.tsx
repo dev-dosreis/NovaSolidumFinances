@@ -548,6 +548,20 @@ export function AdminDashboard() {
               Acompanhe os registros enviados pelo formulário de onboarding.
             </p>
           </div>
+          <Button asChild variant="outline">
+            <Link to="/admin/cnpj">Consultar CNPJ</Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Card className="p-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">Ações Rápidas</p>
+              <Button asChild variant="secondary" size="sm" className="w-full">
+                <Link to="/admin/cnpj">🔍 Consulta CNPJ</Link>
+              </Button>
+            </div>
+          </Card>
           <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">Firebase conectado</Badge>
         </div>
 
