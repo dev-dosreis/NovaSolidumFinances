@@ -11,7 +11,7 @@ import {
   addDoc,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, isFirebaseConfigured } from '../firebase';
 import type {
   CnpjLookupResponse,
   BrasilApiCnpjResponse,
@@ -99,7 +99,13 @@ async function getFromCache(
   cnpj: string
 ): Promise<CnpjLookupResponse | null> {
   try {
-    const docRef = doc(db, 'cnpj_cache', cnpj);
+    const firestore = db;
+
+    if (!isFirebaseConfigured || !firestore) {
+      return null;
+    }
+
+    const docRef = doc(firestore, 'cnpj_cache', cnpj);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -107,6 +113,10 @@ async function getFromCache(
     }
 
     const data = docSnap.data() as CnpjCacheDocument;
+
+    if (!data.expiresAt) {
+      return null;
+    }
 
     // Verifica se o cache expirou
     const expiresAt = data.expiresAt instanceof Date
@@ -134,7 +144,13 @@ async function saveToCache(
   source: CnpjSource
 ): Promise<void> {
   try {
-    const docRef = doc(db, 'cnpj_cache', cnpj);
+    const firestore = db;
+
+    if (!isFirebaseConfigured || !firestore) {
+      return;
+    }
+
+    const docRef = doc(firestore, 'cnpj_cache', cnpj);
     const expiresAt = getCacheExpiration(CACHE_TTL_DAYS);
 
     const cacheDoc: CnpjCacheDocument = {
@@ -240,7 +256,13 @@ function transformBrasilApiResponse(
  */
 async function logLookup(log: CnpjLookupLog): Promise<void> {
   try {
-    await addDoc(collection(db, 'cnpj_lookup_logs'), {
+    const firestore = db;
+
+    if (!isFirebaseConfigured || !firestore) {
+      return;
+    }
+
+    await addDoc(collection(firestore, 'cnpj_lookup_logs'), {
       ...log,
       searchedAt: serverTimestamp(),
     });

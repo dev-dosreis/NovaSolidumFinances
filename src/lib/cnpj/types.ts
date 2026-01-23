@@ -3,6 +3,8 @@
  * Módulo de Consulta CNPJ para Admin Dashboard
  */
 
+import type { Timestamp } from 'firebase/firestore';
+
 export type CnpjSource = 'CACHE' | 'BRASILAPI' | 'PROVIDER';
 
 export type CnpjLookupStatus = 'FOUND' | 'NOT_FOUND' | 'ERROR';
@@ -47,7 +49,7 @@ export interface CnpjCacheDocument {
   payload: CnpjLookupResponse;
   source: CnpjSource;
   updatedAt: Date;
-  expiresAt: Date;
+  expiresAt: Date | Timestamp;
 }
 
 export interface CnpjLookupLog {

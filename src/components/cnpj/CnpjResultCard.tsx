@@ -45,6 +45,8 @@ export function CnpjResultCard({ data }: CnpjResultCardProps) {
     }).format(date);
   };
 
+  const isActive = data.situacaoCadastral?.toLowerCase().includes('ativa') ?? false;
+
   return (
     <Card className="p-6">
       <div className="space-y-6">
@@ -58,7 +60,14 @@ export function CnpjResultCard({ data }: CnpjResultCardProps) {
               </p>
             )}
           </div>
-          <Badge variant={data.situacaoCadastral?.toLowerCase().includes('ativa') ? 'default' : 'secondary'}>
+          <Badge
+            variant={isActive ? 'default' : 'outline'}
+            className={
+              isActive
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : 'border-amber-200 bg-amber-50 text-amber-700'
+            }
+          >
             {data.situacaoCadastral || 'N/A'}
           </Badge>
         </div>
